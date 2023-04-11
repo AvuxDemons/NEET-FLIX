@@ -11,7 +11,7 @@ type User struct {
 	username    string
 	email       string
 	membership  string
-	tangglLahir int
+	tanggalLahir int
 }
 
 type Movie struct {
@@ -151,7 +151,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, sort s
 				fmt.Println("-Username\t : ", tempUser.data.username)
 				fmt.Println("-Email\t : ", tempUser.data.email)
 				fmt.Println("-Membership\t : ", tempUser.data.membership)
-				fmt.Println("-Tanggal Lahir\t : ", tempUser.data.tangglLahir)
+				fmt.Println("-Tanggal Lahir\t : ", tempUser.data.tanggalLahir)
 				tempUser = tempUser.next
 			}
 		} else {
@@ -174,7 +174,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, sort s
 					fmt.Println("-Username\t : ", tempUser.data.username)
 					fmt.Println("-Email\t : ", tempUser.data.email)
 					fmt.Println("-Membership\t : ", tempUser.data.membership)
-					fmt.Println("-Tanggal Lahir\t : ", tempUser.data.tangglLahir)
+					fmt.Println("-Tanggal Lahir\t : ", tempUser.data.tanggalLahir)
 				}
 				tempUser = tempUser.next
 			}
@@ -199,7 +199,7 @@ func inputUser(selector int, model int) {
 	scanner := bufio.NewScanner(os.Stdin)
 	var x string
 	var a, b, c, d, e string //agar lebih hemat variabel, saya pake di input user dan movienya
-	var tangglLahir, tahunRilis int
+	var tanggalLahir, tahunRilis int
 	var rating float32
 
 	scanner.Scan()
@@ -207,7 +207,6 @@ func inputUser(selector int, model int) {
 	if model == 1 {
 
 		for x != "t" {
-			// scanner := bufio.NewScanner(os.Stdin)
 			fmt.Print("Masukkan Data ")
 			if selector == 1 {
 				fmt.Println("User")
@@ -220,17 +219,19 @@ func inputUser(selector int, model int) {
 				fmt.Print("Membership\t: ")
 				scanner.Scan()
 				c = scanner.Text()
+
 				fmt.Print("Tanggal Lahir\t: ")
-				scanner.Scan()
-				fmt.Scan(&tangglLahir)
+				fmt.Scan(&tanggalLahir)
 			} else {
 				fmt.Println("Movie")
 				fmt.Print("Judul\t: ")
 				scanner.Scan()
 				a = scanner.Text()
+				
 				fmt.Print("Tahun Rilis\t: ")
-				scanner.Scan()
 				fmt.Scan(&tahunRilis)
+
+				scanner.Scan()
 				fmt.Print("Genre\t: ")
 				scanner.Scan()
 				b = scanner.Text()
@@ -240,24 +241,26 @@ func inputUser(selector int, model int) {
 				fmt.Print("Studio\t: ")
 				scanner.Scan()
 				d = scanner.Text()
+				
 				fmt.Print("Rating\t: ")
-				scanner.Scan()
 				fmt.Scan(&rating)
+				
+				scanner.Scan()
 				fmt.Print("Rate Umur\t: ")
 				scanner.Scan()
 				e = scanner.Text()
 			}
 
-			id++
-
 			// Data Skeleton
-			dataUser := User{username: a, email: b, membership: c, tangglLahir: tangglLahir}
+			dataUser := User{username: a, email: b, membership: c, tanggalLahir: tanggalLahir}
 			dataMovie := Movie{judul: a, tahunRilis: tahunRilis, genre: b, kategori: c, studio: d, rating: rating, rateUmur: e}
-
+			
 			// Insert Data
 			InsertData(&user, &movie, dataUser, dataMovie, selector)
-
+			
 			// Break Looping
+			scanner.Scan() // Reset fmt.Scan
+
 			fmt.Println("TAMBAH DATA ? [ y / t ]")
 			scanner.Scan()
 			x = strings.TrimSpace(scanner.Text())
@@ -277,7 +280,7 @@ func inputUser(selector int, model int) {
 			c = scanner.Text()
 			fmt.Print("Tanggal Lahir\t: ")
 			scanner.Scan()
-			fmt.Scan(&tangglLahir)
+			fmt.Scan(&tanggalLahir)
 		} else {
 			fmt.Println("Movie")
 			fmt.Print("Judul\t: ")
@@ -303,10 +306,8 @@ func inputUser(selector int, model int) {
 			e = scanner.Text()
 		}
 
-		id++
-
 		// Data Skeleton
-		dataUser := User{username: a, email: b, membership: c, tangglLahir: tangglLahir}
+		dataUser := User{username: a, email: b, membership: c, tanggalLahir: tanggalLahir}
 		dataMovie := Movie{judul: a, tahunRilis: tahunRilis, genre: b, kategori: c, studio: d, rating: rating, rateUmur: e}
 
 		// Update Data
@@ -314,6 +315,72 @@ func inputUser(selector int, model int) {
 	}
 }
 
-func main() {
+func mainMenu() {
+	var input int
+	for input != 3 {
+		fmt.Println("N.E.E.T - FLIX")
+		fmt.Println("1. USER")
+		fmt.Println("2. MOVIE")
+		fmt.Println("3. EXIT")
+		fmt.Scan(&input)
+		if input < 3 && input > 0 {
+			chooseMenu(input)
+		} else if input != 3 {
+			fmt.Println("Invalid Input")
+		} else {
+			fmt.Println("Exiting Program")
+		}
+	}
+}
 
+func chooseMenu(selector int) {
+	var input int
+	// var query string
+	var pilih string
+
+	if selector == 1 {
+		pilih = "User"
+	} else {
+		pilih = "Movie"
+	}
+
+	for input != 6 {
+		fmt.Print("PENGOLAHAN DATA ")
+		if selector == 1 {
+			fmt.Println("USER")
+		} else {
+			fmt.Println("MOVIE")
+		}
+
+		fmt.Println("1. Tambah", pilih)
+		fmt.Println("2. Hapus", pilih)
+		fmt.Println("3. Update", pilih)
+		fmt.Println("4. Lihat Semua", pilih)
+		fmt.Println("5. Lihat KONTOL", pilih)
+		fmt.Println("6. Kembali")
+
+		// Select Menu
+		fmt.Scan(&input)
+
+		switch input {
+		case 1:
+			if selector == 1 {
+				inputUser(1, 1)
+			} else {
+				inputUser(2, 1)
+			}
+		case 2:
+			
+		case 3:
+			
+		case 4:
+			
+		case 5:
+			
+		}
+	}
+}
+
+func main() {
+	mainMenu()
 }
