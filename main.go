@@ -8,9 +8,9 @@ import (
 )
 
 type User struct {
-	username    string
-	email       string
-	membership  string
+	username     string
+	email        string
+	membership   string
 	tanggalLahir int
 }
 
@@ -34,7 +34,7 @@ type structMovie struct {
 	next *structMovie
 }
 
-var id int = 0
+// /var id int = 0
 var user structUser
 var movie structMovie
 
@@ -68,7 +68,7 @@ func InsertData(listUser *structUser, listMovie *structMovie, user User, movie M
 	}
 }
 
-func DeleteData(listUser *structUser, listMovie *structMovie, selector int, userId string) {
+func DeleteData(listUser *structUser, listMovie *structMovie, selector int, userId string) { //userId == username/judul
 	tempUser := listUser
 	tempMovie := listMovie
 
@@ -227,7 +227,7 @@ func inputUser(selector int, model int) {
 				fmt.Print("Judul\t: ")
 				scanner.Scan()
 				a = scanner.Text()
-				
+
 				fmt.Print("Tahun Rilis\t: ")
 				fmt.Scan(&tahunRilis)
 
@@ -241,10 +241,10 @@ func inputUser(selector int, model int) {
 				fmt.Print("Studio\t: ")
 				scanner.Scan()
 				d = scanner.Text()
-				
+
 				fmt.Print("Rating\t: ")
 				fmt.Scan(&rating)
-				
+
 				scanner.Scan()
 				fmt.Print("Rate Umur\t: ")
 				scanner.Scan()
@@ -254,10 +254,10 @@ func inputUser(selector int, model int) {
 			// Data Skeleton
 			dataUser := User{username: a, email: b, membership: c, tanggalLahir: tanggalLahir}
 			dataMovie := Movie{judul: a, tahunRilis: tahunRilis, genre: b, kategori: c, studio: d, rating: rating, rateUmur: e}
-			
+
 			// Insert Data
 			InsertData(&user, &movie, dataUser, dataMovie, selector)
-			
+
 			// Break Looping
 			scanner.Scan() // Reset fmt.Scan
 
@@ -265,7 +265,7 @@ func inputUser(selector int, model int) {
 			scanner.Scan()
 			x = strings.TrimSpace(scanner.Text())
 		}
-	} else {
+	} else if model == 2 {
 		fmt.Print("Masukkan Data Baru ")
 		if selector == 1 {
 			fmt.Println("User")
@@ -312,6 +312,23 @@ func inputUser(selector int, model int) {
 
 		// Update Data
 		UpdateData(&user, &movie, dataUser, dataMovie, selector)
+	} else {
+		fmt.Print("Masukkan Data yang ingin dihapus ")
+		if selector == 1 {
+			fmt.Println("User")
+			fmt.Print("Username\t: ")
+			scanner.Scan()
+			a = scanner.Text()
+		} else {
+			fmt.Println("Movie")
+			fmt.Print("Judul\t: ")
+			scanner.Scan()
+			a = scanner.Text()
+		}
+
+		// Data Skeleton
+		// Update Data
+		DeleteData(&user, &movie, selector, a)
 	}
 }
 
@@ -344,7 +361,7 @@ func chooseMenu(selector int) {
 		pilih = "Movie"
 	}
 
-	for input != 6 {
+	for input != 0 {
 		fmt.Print("PENGOLAHAN DATA ")
 		if selector == 1 {
 			fmt.Println("USER")
@@ -356,27 +373,50 @@ func chooseMenu(selector int) {
 		fmt.Println("2. Hapus", pilih)
 		fmt.Println("3. Update", pilih)
 		fmt.Println("4. Lihat Semua", pilih)
-		fmt.Println("5. Lihat KONTOL", pilih)
-		fmt.Println("6. Kembali")
+		if selector == 1 {
+			fmt.Println("5. Lihat", pilih, "by username")
+		} else {
+			fmt.Println("5. Lihat", pilih, "by kategori")
+			fmt.Println("6. Lihat", pilih, "by genre")
+			fmt.Println("7. Lihat", pilih, "by rate umur")
+
+		}
+		fmt.Println("0. Kembali")
 
 		// Select Menu
 		fmt.Scan(&input)
-
-		switch input {
-		case 1:
-			if selector == 1 {
+		// ISI DATA MASTER USER
+		if selector == 1 {
+			switch input {
+			case 1:
 				inputUser(1, 1)
-			} else {
-				inputUser(2, 1)
+			case 2:
+				inputUser(1, 2)
+			case 3:
+				inputUser(1, 3)
+			case 4:
+				//view all
+			case 5:
+				// view by username
 			}
-		case 2:
-			
-		case 3:
-			
-		case 4:
-			
-		case 5:
-			
+		} else {
+			// ISI DATA MASTER MOVIE
+			switch input {
+			case 1:
+				inputUser(2, 1)
+			case 2:
+				inputUser(2, 2)
+			case 3:
+				inputUser(2, 3)
+			case 4:
+				// view all
+			case 5:
+				// view by kategori
+			case 6:
+				// view by genre
+			case 7:
+				// view by rate
+			}
 		}
 	}
 }
