@@ -154,7 +154,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 		println("DATA MASIH KOSONG")
 	} else {
 
-	if params == "NIL" {
+	if params == "nil" {
 		// View All
 		if selector == 1 {
 			for tempUser != nil {
@@ -429,7 +429,6 @@ func chooseMenu(selector int) {
 					fmt.Scan(&params)
 
 					ReadData(&user, &movie, selector, params)
-	
 			}
 		} else {
 			switch input {
