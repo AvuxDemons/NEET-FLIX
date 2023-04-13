@@ -14,7 +14,6 @@ type Age struct {
 }
 
 type User struct {
-	id         string
 	username   string
 	email      string
 	membership string
@@ -25,8 +24,8 @@ type Movie struct {
 	id       string
 	title    string
 	release  int
-	genre    string
-	category string
+	genre    []string
+	category int
 	studio   string
 	rating   float32
 	agerate  string
@@ -45,6 +44,9 @@ type structMovie struct {
 var movieID int = 0
 var user structUser
 var movie structMovie
+
+var genreList = []string{"Action", "Commedy", "Horror", "Romance", "Sci-fi", "Adventure", "Supranatural", "Magic", "Fantasy", "Thriler"}
+var kategoriList = []string{"Movie", "Anime", "Series", "Cartoon", "Documenter"}
 
 func Cls() {
 	fmt.Print("\033[H\033[2J")
@@ -105,7 +107,7 @@ func DeleteData(listUser *structUser, listMovie *structMovie, selector int, para
 	} else {
 		for tempMovie.next != nil {
 			counter++
-			if tempMovie.next.data.title == params {
+			if tempMovie.next.data.id == params {
 				if counter == 1 {
 					tempMovie.next = tempMovie.next.next
 					break
@@ -136,7 +138,7 @@ func UpdateData(listUser *structUser, listMovie *structMovie, user User, movie M
 		}
 	} else {
 		for tempMovie.next != nil {
-			if tempMovie.next.data.title == movie.title {
+			if tempMovie.next.data.id == movie.id {
 				tempMovie.next.data = movie
 				break
 			}
@@ -161,7 +163,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 					fmt.Println("|-Username       : ", tempUser.data.username)
 					fmt.Println("|-Email          : ", tempUser.data.email)
 					fmt.Println("|-Membership     : ", tempUser.data.membership)
-					fmt.Println("|-Tanggal Lahir  : ", tempUser.data.born)
+					fmt.Println("|-Tanggal Lahir  : ", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
 					tempUser = tempUser.next
 				}
 			} else {
@@ -187,14 +189,15 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 						fmt.Println("|-Username       : ", tempUser.data.username)
 						fmt.Println("|-Email          : ", tempUser.data.email)
 						fmt.Println("|-Membership     : ", tempUser.data.membership)
-						fmt.Println("|-Tanggal Lahir  : ", tempUser.data.born)
+						fmt.Println("|-Tanggal Lahir  : ", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
 					}
 					tempUser = tempUser.next
 				}
 			} else {
-				for tempMovie != nil {
-					if tempMovie.data.category == params || tempMovie.data.genre == params || tempMovie.data.agerate == params {
+				for tempMovie != nil { // tempMovie.data.category == params || tempMovie.data.genre == params ||
+					if tempMovie.data.agerate == params {
 						fmt.Println("=================================")
+						fmt.Println("|-Movie ID     : ", tempMovie.data.id)
 						fmt.Println("|-Judul        : ", tempMovie.data.title)
 						fmt.Println("|-Tahun Rilis  : ", tempMovie.data.release)
 						fmt.Println("|-Genre        : ", tempMovie.data.genre)
@@ -212,10 +215,10 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 
 func InputUser(selector int, model int) {
 	scanner := bufio.NewScanner(os.Stdin)
-	var x string
-	var a, b, c, d, e, id string //agar lebih hemat variabel, saya pake di input user dan movienya
-	var release, date, month, year int
+	var a, b, c, d, e, x, id string
+	var release, date, month, year, sasa int
 	var rating float32
+	var genremov []string
 
 	scanner.Scan()
 
@@ -257,20 +260,38 @@ func InputUser(selector int, model int) {
 
 				fmt.Print("Tahun Rilis : ")
 				fmt.Scan(&release)
-				scanner.Scan()
+
+				for i := 0; i < len(genreList); i++ {
+					fmt.Printf("%d. %v \n", i+1, genreList[i])
+				}
+				fmt.Printf("x. Exit")
+
+				var genrex int
 				fmt.Print("Genre       : ")
-				scanner.Scan()
-				b = scanner.Text()
+				for genrex != 99 {
+					fmt.Scan(&genrex)
+					if genrex != 99 {
+						fmt.Print(",")
+						genremov = append(genremov, genreList[genrex-1])
+					}
+				}
+
+				for k := 1; k < len(kategoriList); k++ {
+					fmt.Printf("%d. %v \n", k, kategoriList[k])
+				}
+				fmt.Printf("x. Exit")
+
 				fmt.Print("Kategori    : ")
+				fmt.Scan(&sasa)
+
 				scanner.Scan()
-				c = scanner.Text()
 				fmt.Print("Studio      : ")
 				scanner.Scan()
 				d = scanner.Text()
 
 				fmt.Print("Rating      : ")
 				fmt.Scan(&rating)
-
+				// ASULAH
 				scanner.Scan()
 				fmt.Print("Rating Umur : ")
 				scanner.Scan()
@@ -278,9 +299,10 @@ func InputUser(selector int, model int) {
 			}
 
 			// Data Skeleton
-			dataUser := User{id: id, username: a, email: b, membership: c, born: Age{date, month, year}}
-			dataMovie := Movie{id: id, title: a, release: release, genre: b, category: c, studio: d, rating: rating, agerate: e}
+			dataUser := User{username: a, email: b, membership: c, born: Age{date, month, year}}
+			dataMovie := Movie{id: id, title: a, release: release, genre: genremov, category: sasa, studio: d, rating: rating, agerate: e}
 
+			fmt.Println(dataMovie)
 			// Insert Data
 			InsertData(&user, &movie, dataUser, dataMovie, selector)
 
@@ -320,6 +342,11 @@ func InputUser(selector int, model int) {
 			fmt.Print("Tahun Rilis : ")
 			scanner.Scan()
 			fmt.Scan(&release)
+
+			for i := 1; i < len(genreList); i++ {
+				fmt.Printf("%d. %v", i, genreList[i])
+			}
+
 			fmt.Print("Genre    : ")
 			scanner.Scan()
 			b = scanner.Text()
@@ -339,7 +366,7 @@ func InputUser(selector int, model int) {
 
 		// Data Skeleton
 		dataUser := User{username: a, email: b, membership: c, born: Age{date, month, year}}
-		dataMovie := Movie{title: a, release: release, genre: b, category: c, studio: d, rating: rating, agerate: e}
+		dataMovie := Movie{title: a, release: release, genre: genremov, category: sasa, studio: d, rating: rating, agerate: e}
 
 		// Update Data
 		UpdateData(&user, &movie, dataUser, dataMovie, selector)
@@ -420,7 +447,7 @@ func chooseMenu(selector int) {
 
 				DeleteData(&user, &movie, selector, params)
 			case 3:
-				InputUser(selector, 2)
+				InputUser(1, 1)
 			case 4:
 				ReadData(&user, &movie, selector, "all")
 			case 5:
@@ -432,9 +459,9 @@ func chooseMenu(selector int) {
 		} else {
 			switch input {
 			case 1:
-				InputUser(selector, 1)
+				InputUser(2, 1)
 			case 2:
-				fmt.Println("Masukkan movie yang ingin dihapus")
+				fmt.Println("Masukkan MovieID yang ingin dihapus")
 				fmt.Scan(&params)
 
 				DeleteData(&user, &movie, selector, params)
