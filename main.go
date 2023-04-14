@@ -151,7 +151,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 	tempUser := listUser.next
 	tempMovie := listMovie.next
 
-	if tempUser == nil {
+	if tempUser == nil && tempMovie == nil {
 		println("DATA MASIH KOSONG")
 	} else {
 
@@ -160,19 +160,23 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 			if selector == 1 {
 				for tempUser != nil {
 					fmt.Println("=================================")
-					fmt.Println("|-Username       : ", tempUser.data.username)
-					fmt.Println("|-Email          : ", tempUser.data.email)
-					fmt.Println("|-Membership     : ", tempUser.data.membership)
-					fmt.Println("|-Tanggal Lahir  : ", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
+					fmt.Println("|-Username       :", tempUser.data.username)
+					fmt.Println("|-Email          :", tempUser.data.email)
+					fmt.Println("|-Membership     :", tempUser.data.membership)
+					fmt.Println("|-Tanggal Lahir  :", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
 					tempUser = tempUser.next
 				}
 			} else {
 				for tempMovie != nil {
 					fmt.Println("=================================")
-					fmt.Println("|-MovieID      : ", tempMovie.data.id)
-					fmt.Println("|-Judul        : ", tempMovie.data.title)
-					fmt.Println("|-Tahun Rilis  : ", tempMovie.data.release)
-					fmt.Println("|-Genre        : ", tempMovie.data.genre)
+					fmt.Println("|-MovieID      :", tempMovie.data.id)
+					fmt.Println("|-Judul        :", tempMovie.data.title)
+					fmt.Println("|-Tahun Rilis  :", tempMovie.data.release)
+					fmt.Print("|-Genre        : ")
+					for i := 0; i < len(tempMovie.data.genre); i++ {
+						fmt.Printf("%v ", tempMovie.data.genre[i])
+					}
+					fmt.Println("")
 					fmt.Println("|-Kategori     : ", tempMovie.data.category)
 					fmt.Println("|-Studio       : ", tempMovie.data.studio)
 					fmt.Println("|-Rating       : ", tempMovie.data.rating)
@@ -302,7 +306,6 @@ func InputUser(selector int, model int) {
 			dataUser := User{username: a, email: b, membership: c, born: Age{date, month, year}}
 			dataMovie := Movie{id: id, title: a, release: release, genre: genremov, category: sasa, studio: d, rating: rating, agerate: e}
 
-			fmt.Println(dataMovie)
 			// Insert Data
 			InsertData(&user, &movie, dataUser, dataMovie, selector)
 
