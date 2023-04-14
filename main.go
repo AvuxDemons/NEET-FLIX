@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -25,7 +27,7 @@ type Movie struct {
 	title    string
 	release  int
 	genre    []string
-	category int
+	category string
 	studio   string
 	rating   float32
 	agerate  string
@@ -45,11 +47,22 @@ var movieID int = 0
 var user structUser
 var movie structMovie
 
-var genreList = []string{"Action", "Commedy", "Horror", "Romance", "Sci-fi", "Adventure", "Supranatural", "Magic", "Fantasy", "Thriler"}
-var kategoriList = []string{"Movie", "Anime", "Series", "Cartoon", "Documenter"}
 
-func Cls() {
-	fmt.Print("\033[H\033[2J")
+
+var genreList = []string{"Action", "Adventure", "Comedy", "Drama", "Fantasy", "Historical", "Horror","Mistery", "Romance", "Sci-fi", "Sport", "Supranatural", "Thriller"}
+var categoryList = []string{"Movie", "Anime", "Series", "Cartoon", "Documenter"}
+var ageRate = []string{"KIDS | 6-11", "TEEN | 12-18", "ADULT | 18+"}
+
+func clearScreen() {
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	} else {
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
 }
 
 func InsertData(listUser *structUser, listMovie *structMovie, user User, movie Movie, selector int) {
@@ -147,79 +160,108 @@ func UpdateData(listUser *structUser, listMovie *structMovie, user User, movie M
 	}
 }
 
-func ReadData(listUser *structUser, listMovie *structMovie, selector int, params string) {
-	tempUser := listUser.next
-	tempMovie := listMovie.next
+func PrintData(listUser *structUser, listMovie *structMovie, selector int) {
+	tempUser := listUser
+	tempMovie := listMovie
 
-	if tempUser == nil && tempMovie == nil {
-		println("DATA MASIH KOSONG")
+	if selector == 1 {
+		fmt.Println("| Username       :", tempUser.data.username)
+		fmt.Println("| Email          :", tempUser.data.email)
+		fmt.Println("| Membership     :", tempUser.data.membership)
+		fmt.Println("| Tanggal Lahir  :", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
 	} else {
+		fmt.Println("| MovieID      :", tempMovie.data.id)
+		fmt.Println("| Judul        :", tempMovie.data.title)
+		fmt.Println("| Tahun Rilis  :", tempMovie.data.release)
+		fmt.Printf("| Genre        : %v\n", strings.Join(tempMovie.data.genre, " "))
+		fmt.Println("| Kategori     :", tempMovie.data.category)
+		fmt.Println("| Studio       :", tempMovie.data.studio)
+		fmt.Println("| Rating       :", tempMovie.data.rating)
+		fmt.Println("| Rate Umur    :", tempMovie.data.agerate)
+	}
+}
+
+func InputData(listUser *structUser, listMovie *structMovie, selector int) {
+	tempUser := listUser
+	tempMovie := listMovie
+
+	if selector == 1 {
+		fmt.Println("| Username       :", tempUser.data.username)
+		fmt.Println("| Email          :", tempUser.data.email)
+		fmt.Println("| Membership     :", tempUser.data.membership)
+		fmt.Println("| Tanggal Lahir  :", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
+	} else {
+		fmt.Println("| MovieID      :", tempMovie.data.id)
+		fmt.Println("| Judul        :", tempMovie.data.title)
+		fmt.Println("| Tahun Rilis  :", tempMovie.data.release)
+		fmt.Printf("| Genre        : %v\n", strings.Join(tempMovie.data.genre, " "))
+		fmt.Println("| Kategori     :", tempMovie.data.category)
+		fmt.Println("| Studio       :", tempMovie.data.studio)
+		fmt.Println("| Rating       :", tempMovie.data.rating)
+		fmt.Println("| Rate Umur    :", tempMovie.data.agerate)
+	}
+}
+
+func ReadData(listUser *structUser, listMovie *structMovie, selector int, params string) {
+		tempUser := listUser.next
+		tempMovie := listMovie.next
 
 		if params == "all" {
 			// View All
 			if selector == 1 {
+				if tempUser == nil{
+					println("| -> DATA KOSONG <-")
+					return
+				}
 				for tempUser != nil {
-					fmt.Println("=================================")
-					fmt.Println("|-Username       :", tempUser.data.username)
-					fmt.Println("|-Email          :", tempUser.data.email)
-					fmt.Println("|-Membership     :", tempUser.data.membership)
-					fmt.Println("|-Tanggal Lahir  :", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
+					fmt.Println("========================================")
+					PrintData(tempUser, tempMovie, 1)
 					tempUser = tempUser.next
 				}
 			} else {
-				for tempMovie != nil {
-					fmt.Println("=================================")
-					fmt.Println("|-MovieID      :", tempMovie.data.id)
-					fmt.Println("|-Judul        :", tempMovie.data.title)
-					fmt.Println("|-Tahun Rilis  :", tempMovie.data.release)
-					fmt.Print("|-Genre        : ")
-					for i := 0; i < len(tempMovie.data.genre); i++ {
-						fmt.Printf("%v ", tempMovie.data.genre[i])
-					}
-					fmt.Println("")
-					fmt.Println("|-Kategori     : ", tempMovie.data.category)
-					fmt.Println("|-Studio       : ", tempMovie.data.studio)
-					fmt.Println("|-Rating       : ", tempMovie.data.rating)
-					fmt.Println("|-Rate Umur    : ", tempMovie.data.agerate)
-					tempMovie = tempMovie.next
+				if tempMovie == nil {
+					println("| -> DATA KOSONG <-")
+					return
 				}
+				for tempMovie != nil {
+					fmt.Println("========================================")
+					PrintData(tempUser, tempMovie, 2)
+					tempMovie = tempMovie.next
+				}				
 			}
 		} else {
 			// View By
 			if selector == 1 {
+				if tempUser == nil{
+					println("| -> DATA KOSONG <-")
+					return
+				}
 				for tempUser != nil {
-					if tempUser.data.username == params { // Param : username
-						fmt.Println("=================================")
-						fmt.Println("|-Username       : ", tempUser.data.username)
-						fmt.Println("|-Email          : ", tempUser.data.email)
-						fmt.Println("|-Membership     : ", tempUser.data.membership)
-						fmt.Println("|-Tanggal Lahir  : ", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
+					if tempUser.data.username == params {
+						fmt.Println("========================================")
+						PrintData(tempUser, tempMovie, 1)
 					}
 					tempUser = tempUser.next
 				}
 			} else {
-				for tempMovie != nil { // tempMovie.data.category == params || tempMovie.data.genre == params ||
-					if tempMovie.data.agerate == params {
-						fmt.Println("=================================")
-						fmt.Println("|-Movie ID     : ", tempMovie.data.id)
-						fmt.Println("|-Judul        : ", tempMovie.data.title)
-						fmt.Println("|-Tahun Rilis  : ", tempMovie.data.release)
-						fmt.Println("|-Genre        : ", tempMovie.data.genre)
-						fmt.Println("|-Kategori     : ", tempMovie.data.category)
-						fmt.Println("|-Studio       : ", tempMovie.data.studio)
-						fmt.Println("|-Rating       : ", tempMovie.data.rating)
-						fmt.Println("|-Rate Umur    : ", tempMovie.data.agerate)
+				if tempMovie == nil {
+					println("| -> DATA KOSONG <-")
+					return
+				}
+				for tempMovie != nil {
+					if tempMovie.data.category == params || strings.Contains(strings.Join(tempMovie.data.genre, ","), params) {
+						fmt.Println("========================================")
+						PrintData(tempUser, tempMovie, 2)
 					}
 					tempMovie = tempMovie.next
 				}
 			}
 		}
 	}
-}
 
 func InputUser(selector int, model int) {
 	scanner := bufio.NewScanner(os.Stdin)
-	var a, b, c, d, e, x, id string
+	var a, b, c, d, e, x, id, category string
 	var release, date, month, year, sasa int
 	var rating float32
 	var genremov []string
@@ -229,147 +271,215 @@ func InputUser(selector int, model int) {
 	if model == 1 {
 
 		for x != "t" {
-			fmt.Print("MASUKKAN DATA ")
+			fmt.Println("========================================")
+			fmt.Print("|\t-> MASUKKAN DATA ")
 			if selector == 1 {
 
-				fmt.Println("USER")
-				fmt.Print("Username   : ")
-				fmt.Scan(&a)
+					fmt.Println("USER <-")
+					fmt.Println("========================================")
+					fmt.Print("| Username   : ")
+					fmt.Scan(&a)
 
-				scanner.Scan()
+					scanner.Scan()
 
-				fmt.Print("Email      : ")
-				scanner.Scan()
-				b = scanner.Text()
-				fmt.Print("Membership : ")
-				scanner.Scan()
-				c = scanner.Text()
+					fmt.Print("| Email      : ")
+					scanner.Scan()
+					b = scanner.Text()
+					fmt.Print("| Membership : ")
+					scanner.Scan()
+					c = scanner.Text()
 
-				fmt.Println("TANGGAL LAHIR")
-				fmt.Print("Tanggal :")
-				fmt.Scan(&date)
-				fmt.Print("Bulan   :")
-				fmt.Scan(&month)
-				fmt.Print("Tahun   :")
-				fmt.Scan(&year)
-				scanner.Scan()
+					fmt.Println("| -> TANGGAL LAHIR <-")
+					fmt.Print("| Tanggal : ")
+					for date >31 && date <1{
+						fmt.Scan(&date)
+						fmt.Println("| -> gak masuk akal, baleni <-")
+					}
+					fmt.Print("| Bulan   : ")
+					for month >12 && month <1{
+					fmt.Scan(&month)
+					fmt.Println("| -> gak masuk akal, baleni <-")
+					}
+					fmt.Print("| Tahun   : ")
+					for year <(2023-100) && year >(2023-5){
+					fmt.Scan(&year)
+					if year <(2023-100){
+						fmt.Println("| -> Gak capek hidup ? <-")
+					} else if year >(2023-5){
+						fmt.Println("| -> Ngapain disini cil <-")
+					}
+					}
+					scanner.Scan()
 			} else {
+				genremov = []string{}
 				movieID++
 				id = fmt.Sprintf("movie-%d", movieID)
 
-				fmt.Println("MOVIE")
-				fmt.Print("Judul       : ")
-				scanner.Scan()
-				a = scanner.Text()
+					fmt.Println("MOVIE <-")
+					fmt.Println("=====================================")
+					fmt.Print("| Judul       : ")
+					scanner.Scan()
+					a = scanner.Text()
 
-				fmt.Print("Tahun Rilis : ")
-				fmt.Scan(&release)
+					fmt.Print("| Tahun Rilis : ")
+					fmt.Scan(&release)
 
+					fmt.Println("=====================================")
+					fmt.Println("|\tGenre List	")
+					fmt.Println("=====================================")
 				for i := 0; i < len(genreList); i++ {
-					fmt.Printf("%d. %v \n", i+1, genreList[i])
+					fmt.Printf("| %d. %v \n", i+1, genreList[i])
 				}
-				fmt.Printf("x. Exit")
+					fmt.Println("| 99. Exit")
 
-				var genrex int
-				fmt.Print("Genre       : ")
-				for genrex != 99 {
-					fmt.Scan(&genrex)
-					if genrex != 99 {
-						fmt.Print(",")
-						genremov = append(genremov, genreList[genrex-1])
+					var genrex int
+					fmt.Println("=====================================")
+					fmt.Println("| Input Genre : ")
+
+					for genrex != 99 {
+						fmt.Print("| Genre       : ")
+						fmt.Scan(&genrex)
+						if genrex != 99 {
+							if strings.Contains(strings.Join(genremov,""), genreList[genrex-1]) {
+								fmt.Println("| -> GENRE SUDAH DIPILIH <-")
+							} else {
+								fmt.Print(",")
+								genremov = append(genremov, genreList[genrex-1])
+							}
+						}
 					}
-				}
+				
+				fmt.Println("=====================================")
+				fmt.Println("|\tKategori List	")
+				fmt.Println("=====================================")
+					for k := 0; k < len(categoryList); k++ {
+						fmt.Printf("| %d. %v \n", k+1, categoryList[k])
+					}
+					//fmt.Println("99. Exit")
+					fmt.Println("=====================================")
+					fmt.Print("| Kategori    : ")
+					fmt.Scan(&sasa)
+					category = categoryList[sasa-1]
 
-				for k := 1; k < len(kategoriList); k++ {
-					fmt.Printf("%d. %v \n", k, kategoriList[k])
-				}
-				fmt.Printf("x. Exit")
+					scanner.Scan()
+					fmt.Print("| Studio      : ")
+					scanner.Scan()
+					d = scanner.Text()
 
-				fmt.Print("Kategori    : ")
-				fmt.Scan(&sasa)
-
-				scanner.Scan()
-				fmt.Print("Studio      : ")
-				scanner.Scan()
-				d = scanner.Text()
-
-				fmt.Print("Rating      : ")
-				fmt.Scan(&rating)
+					fmt.Print("| Rating      : ")
+					fmt.Scan(&rating)
 				// ASULAH
-				scanner.Scan()
-				fmt.Print("Rating Umur : ")
-				scanner.Scan()
-				e = scanner.Text()
+					scanner.Scan()
+					fmt.Print("| Rating Umur : ")
+					scanner.Scan()
+					e = scanner.Text()
 			}
 
 			// Data Skeleton
 			dataUser := User{username: a, email: b, membership: c, born: Age{date, month, year}}
-			dataMovie := Movie{id: id, title: a, release: release, genre: genremov, category: sasa, studio: d, rating: rating, agerate: e}
+			dataMovie := Movie{id: id, title: a, release: release, genre: genremov, category: category, studio: d, rating: rating, agerate: e}
 
 			// Insert Data
 			InsertData(&user, &movie, dataUser, dataMovie, selector)
 
 			// Break Looping
 			// scanner.Scan() /* Reset fmt.Scan */
-			fmt.Println("TAMBAH DATA ? [ y / t ]")
-			scanner.Scan()
+				fmt.Print("| TAMBAH DATA ? [ y / t ] : ")
+				scanner.Scan()
 			x = strings.TrimSpace(scanner.Text())
 		}
 	} else {
-		fmt.Print("EDIT DATA")
+				fmt.Print("| -> EDIT DATA ")
 		if selector == 1 {
-			fmt.Println("USER")
-			fmt.Print("Username   : ")
-			scanner.Scan()
-			a = scanner.Text()
-			fmt.Print("Email      : ")
-			scanner.Scan()
-			b = scanner.Text()
-			fmt.Print("Membership : ")
-			scanner.Scan()
-			c = scanner.Text()
+				fmt.Println("USER <-")
+				// jika data ada prosesnya lanjut, kalo tidak ada notif data tidak ada
+				fmt.Print("| Username   : ")
+				scanner.Scan()
+				a = scanner.Text()
+				fmt.Print("| Email      : ")
+				scanner.Scan()
+				b = scanner.Text()
+				fmt.Print("| Membership : ")
+				scanner.Scan()
+				c = scanner.Text()
 
-			fmt.Println("TANGGAL LAHIR")
-			fmt.Print("Tanggal : ")
-			fmt.Scan(&date)
-			fmt.Print("Bulan   : ")
-			fmt.Scan(&month)
-			fmt.Print("Tahun   : ")
-			fmt.Scan(&month)
-			scanner.Scan()
+				fmt.Println("| -> TANGGAL LAHIR <-")
+					fmt.Print("| Tanggal : ")
+					fmt.Scan(&date)
+					for date >31 && date <1{
+						fmt.Println("gak masuk akal, baleni")
+					}
+					for month >12 && month <1{
+						fmt.Print("| Bulan   : ")
+					fmt.Scan(&month)
+					fmt.Println("gak masuk akal,baleni")
+					}
+					fmt.Print("| Tahun   : ")
+					fmt.Scan(&year)
+					for year <(2023-100) && year >(2023-5){
+					if year <(2023-100){
+						fmt.Println("Gak capek hidup ?")
+					} else if year >(2023-5){
+						fmt.Println("Ngapain disini cil")
+					}
+					}
+				scanner.Scan()
 		} else {
-			fmt.Println("MOVIE")
-			fmt.Print("Judul    : ")
-			scanner.Scan()
-			a = scanner.Text()
-			fmt.Print("Tahun Rilis : ")
-			scanner.Scan()
-			fmt.Scan(&release)
+				fmt.Println("MOVIE <-")
+				fmt.Print("| Movie-ID    : ")
+				scanner.Scan()
+				id = scanner.Text()
+				fmt.Print("| Judul       : ")
+				scanner.Scan()
+				a = scanner.Text()
 
-			for i := 1; i < len(genreList); i++ {
-				fmt.Printf("%d. %v", i, genreList[i])
+				fmt.Print("| Tahun Rilis : ")
+				fmt.Scan(&release)
+
+				for i := 0; i < len(genreList); i++ {
+					fmt.Printf("| %d. %v \n", i+1, genreList[i])
+				}
+				fmt.Println("| 99. Exit")
+
+				var genrex int
+				fmt.Println("| Genre	: ")
+				for genrex != 99 {
+					fmt.Scan(&genrex)
+					if genrex != 99 {
+						if strings.Contains(strings.Join(genremov,","), genreList[genrex-1]) {
+							fmt.Println("| -> GENRE SUDAH DIPILIH <-")
+						} else {
+							fmt.Print(",")
+							genremov = append(genremov, genreList[genrex-1])
+						}
+					}
+				}
+
+				for k := 0; k < len(categoryList); k++ {
+					fmt.Printf("| %d. %v \n", k+1, categoryList[k])
+				}
+				
+				fmt.Println("=====================================")
+				fmt.Print("| Kategori    : ")
+				fmt.Scan(&sasa)
+				category = categoryList[sasa-1]
+
+				scanner.Scan()
+				fmt.Print("| Studio      : ")
+				scanner.Scan()
+				d = scanner.Text()
+
+				fmt.Print("| Rating      : ")
+				fmt.Scan(&rating)
+				scanner.Scan()
+				fmt.Print("| Rating Umur : ")
+				scanner.Scan()
+				e = scanner.Text()
 			}
-
-			fmt.Print("Genre    : ")
-			scanner.Scan()
-			b = scanner.Text()
-			fmt.Print("Kategori : ")
-			scanner.Scan()
-			c = scanner.Text()
-			fmt.Print("Studio   : ")
-			scanner.Scan()
-			d = scanner.Text()
-			fmt.Print("Rating   : ")
-			scanner.Scan()
-			fmt.Scan(&rating)
-			fmt.Print("Rating Umur : ")
-			scanner.Scan()
-			e = scanner.Text()
-		}
 
 		// Data Skeleton
 		dataUser := User{username: a, email: b, membership: c, born: Age{date, month, year}}
-		dataMovie := Movie{title: a, release: release, genre: genremov, category: sasa, studio: d, rating: rating, agerate: e}
+		dataMovie := Movie{id:id, title: a, release: release, genre: genremov, category: category, studio: d, rating: rating, agerate: e}
 
 		// Update Data
 		UpdateData(&user, &movie, dataUser, dataMovie, selector)
@@ -380,91 +490,77 @@ func mainMenu() {
 	var input int
 	for input != 3 {
 
-		fmt.Println("==========================")
-		fmt.Println("|    <> NEET FLIX <> \t |")
-		fmt.Println("==========================")
-		fmt.Println("| 1. Manage User \t |")
-		fmt.Println("| 2. Manage Movie \t |")
-		fmt.Println("| 3. Exit \t \t |")
-		fmt.Println("==========================")
+		fmt.Println("===========================================================")
+		fmt.Println(" _  _ ___ ___ _____ ___ _    _____  __")
+		fmt.Println("| \\| | __| __|_   _| __| |  |_ _\\ \\/ /")
+		fmt.Println("| .` | _|| _|  | | | _|| |__ | | >  < ")
+		fmt.Println("|_|\\_|___|___| |_| |_| |____|___/_/\\_\\")
+		fmt.Println("========================================")
+		fmt.Println("| 1. Manage User  ")
+		fmt.Println("| 2. Manage Movie  ")
+		fmt.Println("| 3. Exit  ")
+		fmt.Println("========================================")
 		fmt.Print("| Input : ")
 		fmt.Scan(&input)
-		fmt.Println("==========================")
+		fmt.Println("========================================")
 
 		// Cls()
 
 		if input < 3 && input > 0 {
 			chooseMenu(input)
 		} else if input != 3 {
-			fmt.Println("INVALID INPUT!")
+			fmt.Println("| -> INVALID INPUT! <-")
 		} else {
-			fmt.Println("Exiting Program")
+			fmt.Println("| -> Exiting Program <-")
 		}
 	}
 }
 
 func chooseMenu(selector int) {
-	var input, exitcase int
-	var masterData, params string
-
+	
+	var input int
+	var params string
+	
+	masterData := "Movie"
+	exitcase := 8
 	if selector == 1 {
-		masterData = "User"
-		exitcase = 6
-	} else {
-		masterData = "Movie"
-		exitcase = 8
+		masterData, exitcase = "User", 6
 	}
 
 	for input != exitcase {
+		clearScreen()
 
-		fmt.Printf("===========================%v\n", strings.Repeat("=", len(masterData)))
-		fmt.Printf("|    Pengolahan Data %s%v |\n", masterData, strings.Repeat(" ", len(masterData)))
-		fmt.Printf("===========================%v\n", strings.Repeat("=", len(masterData)))
-		fmt.Printf("| 1. Add %s%v             |\n", masterData, strings.Repeat(" ", len(masterData)))
-		fmt.Printf("| 2. Delete %s%v          |\n", masterData, strings.Repeat(" ", len(masterData)))
-		fmt.Printf("| 3. Edit %s%v            |\n", masterData, strings.Repeat(" ", len(masterData)))
-		fmt.Printf("| 4. View All %s%v        |\n", masterData, strings.Repeat(" ", len(masterData)))
+		fmt.Println("========================================")
+		fmt.Printf("|\tPengolahan Data %s       \n", masterData)
+		fmt.Println("========================================")
+		fmt.Printf("| 1. Add %s                   \n", masterData)
+		fmt.Printf("| 2. Delete %s                \n", masterData)
+		fmt.Printf("| 3. Edit %s                  \n", masterData)
+		fmt.Printf("| 4. View All %s              \n", masterData)
 
 		if selector == 1 {
-			fmt.Printf("| 5. View %s By Username%v|\n", masterData, strings.Repeat(" ", len(masterData)))
-			fmt.Printf("| 6. Back                 %v|\n", strings.Repeat(" ", len(masterData)))
+			fmt.Printf("| 5. View %s By Username      \n", masterData)
+			fmt.Println("| 6. Back                     ")
 		} else {
-			fmt.Printf("| 5. View %s By Category%v|\n", masterData, strings.Repeat(" ", len(masterData)))
-			fmt.Printf("| 6. View %s By Genre   %v|\n", masterData, strings.Repeat(" ", len(masterData)))
-			fmt.Printf("| 7. View %s By Age Rate%v|\n", masterData, strings.Repeat(" ", len(masterData)))
-			fmt.Printf("| 8. Back                  %v|\n", strings.Repeat(" ", len(masterData)))
+			fmt.Printf("| 5. View %s By Title      \n", masterData)
+			fmt.Printf("| 6. View %s By Category         \n", masterData)
+			fmt.Printf("| 7. View %s By Genre      \n", masterData)
+			fmt.Println("| 8. Back                      ")
 		}
 
-		fmt.Printf("===========================%v\n", strings.Repeat("=", len(masterData)))
-
+		 fmt.Println("========================================")
 		// Select Menu
+		fmt.Print("| Pilih Menu: ")
 		fmt.Scan(&input)
+
+		clearScreen()
 
 		if selector == 1 {
 			switch input {
 			case 1:
 				InputUser(selector, 1)
 			case 2:
-				fmt.Println("Masukkan username yang ingin dihapus")
-				fmt.Scan(&params)
-
-				DeleteData(&user, &movie, selector, params)
-			case 3:
-				InputUser(1, 1)
-			case 4:
-				ReadData(&user, &movie, selector, "all")
-			case 5:
-				fmt.Println("Masukkan username yang ingin dilihat")
-				fmt.Scan(&params)
-
-				ReadData(&user, &movie, selector, params)
-			}
-		} else {
-			switch input {
-			case 1:
-				InputUser(2, 1)
-			case 2:
-				fmt.Println("Masukkan MovieID yang ingin dihapus")
+				fmt.Println("| -> Masukkan Username yang ingin dihapus <-")
 				fmt.Scan(&params)
 
 				DeleteData(&user, &movie, selector, params)
@@ -473,25 +569,60 @@ func chooseMenu(selector int) {
 			case 4:
 				ReadData(&user, &movie, selector, "all")
 			case 5:
-				fmt.Println("Tampilkan movie berdasarkan kategori")
+				fmt.Println("| -> Masukkan username yang ingin dilihat <-")
+				fmt.Scan(&params)
+
+				ReadData(&user, &movie, selector, params)
+			}
+		} else {
+			switch input {
+			case 1:
+				InputUser(selector, 1)
+			case 2:
+				fmt.Println("| -> Masukkan MovieID yang ingin dihapus <-")
 				fmt.Scan(&params)
 
 				DeleteData(&user, &movie, selector, params)
+			case 3:
+				InputUser(selector, 2)
+			case 4:
+				ReadData(&user, &movie, selector, "all")
+			case 5:
+				fmt.Println("| -> Tampilkan movie berdasarkan judul <-")
+				fmt.Scan(&params)
+
+				ReadData(&user, &movie, selector, params)
 			case 6:
-				fmt.Println("Tampilkan movie berdasarkan genre")
-				fmt.Scan(&params)
+				var x int
+				fmt.Println("| -> Tampilkan movie berdasarkan kategori <-")
+				for k := 0; k < len(categoryList); k++ {
+					fmt.Printf("%d. %v \n", k+1, categoryList[k])
+				}
 
-				DeleteData(&user, &movie, selector, params)
+				fmt.Print("Kategori    : ")
+				fmt.Scan(&x)
+					
+				params = categoryList[x-1]
+
+				ReadData(&user, &movie, selector, params)
 			case 7:
-				fmt.Println("Tampilkan movie berdasarkan rate umur")
-				fmt.Scan(&params)
+				var x int
+				fmt.Println("| -> Tampilkan movie berdasarkan genre <-")
+				for k := 0; k < len(genreList); k++ {
+					fmt.Printf("%d. %v \n", k+1, genreList[k])
+				}
 
-				DeleteData(&user, &movie, selector, params)
+				fmt.Print("| Genre    : ")
+				fmt.Scan(&x)
+				
+				params = genreList[x-1]
+				
+				ReadData(&user, &movie, selector, params)
 			}
 		}
 
 		if input > exitcase {
-			fmt.Println("INVALID INPUT!")
+			fmt.Println(" INVALID INPUT!")
 		}
 	}
 }
