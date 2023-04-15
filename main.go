@@ -385,7 +385,7 @@ func InputUser(selector int, model int, params string) {
 				fmt.Print("| Tahun Rilis : ")
 				fmt.Scan(&release)
 
-				fmt.Println("| Genre	")
+				fmt.Println("| -> Genre <-")
 				for i := 0; i < len(genreList); i++ {
 					fmt.Printf("|   %d. %v \n", i+1, genreList[i])
 				}
@@ -408,7 +408,7 @@ func InputUser(selector int, model int, params string) {
 					}
 				}
 
-				fmt.Println("| Kategori")
+				fmt.Println("| -> Kategori <-")
 				for k := 0; k < len(categoryList); k++ {
 					fmt.Printf("|   %d. %v \n", k+1, categoryList[k])
 				}
@@ -426,7 +426,7 @@ func InputUser(selector int, model int, params string) {
 				fmt.Print("| Rating      : ")
 				fmt.Scan(&rating)
 
-				fmt.Println("| Batasan Umur")
+				fmt.Println("| -> Batasan Umur <-")
 				for k := 0; k < len(ageRate); k++ {
 					fmt.Printf("|   %d. %v \n", k+1, ageRate[k])
 				}
@@ -447,11 +447,17 @@ func InputUser(selector int, model int, params string) {
 			fmt.Println("|---------------------------------------")
 			fmt.Print("| Menambah Data Lain ? (y/t) => ")
 			fmt.Scan(&x)
+
 			if x == "t" {
+				clearScreen()
 				break
 			} else {
-				fmt.Println("|---------------------------------------")
-				scanner.Scan()
+				fmt.Printf("|---------------------------------------\n")
+				//scanner.Scan()
+				clearScreen()
+				fmt.Println("========================================")
+				fmt.Println("|\t Masukkan Data", masterData)
+				fmt.Println("========================================")
 			}
 		}
 	} else {
@@ -464,7 +470,11 @@ func InputUser(selector int, model int, params string) {
 			for k := 0; k < len(userMembership); k++ {
 				fmt.Printf("|   %d. %v \n", k+1, userMembership[k])
 			}
+
+			fmt.Print("|  Pilih : ")
 			fmt.Scan(&ship)
+			reInput()
+			fmt.Println("|   -", userMembership[ship-1], "Telah Dipilih")
 			membership = userMembership[ship-1]
 
 			fmt.Println("| Tanggal Lahir")
@@ -509,6 +519,7 @@ func InputUser(selector int, model int, params string) {
 			fmt.Printf("| Tanggal Lahir   : %d/%d/%d \n", date, month, year)
 
 			scanner.Scan()
+
 		} else {
 			scanner.Scan()
 			fmt.Print("| Judul       : ")
@@ -659,12 +670,16 @@ func chooseMenu(selector int) {
 				fmt.Println("========================================")
 				fmt.Println("|  Masukkan Username yang ingin diupdate ")
 				fmt.Println("========================================")
+				fmt.Print("| Masukkan Username : ")
 				fmt.Scan(&params)
+				clearScreen()
+
 				if ValidateData(&user, &movie, selector, params) {
 					ReadData(&user, &movie, selector, params)
 					fmt.Println("========================================")
 					InputUser(selector, 2, params)
 					fmt.Println("========================================")
+					clearScreen()
 				} else {
 					reInput()
 					fmt.Println("User Tidak Ditemukan")
@@ -675,7 +690,9 @@ func chooseMenu(selector int) {
 				fmt.Println("========================================")
 				fmt.Println("| Masukkan Username yang ingin dilihat ")
 				fmt.Println("========================================")
+				fmt.Print("| Masukkan Username : ")
 				fmt.Scan(&params)
+				clearScreen()
 
 				ReadData(&user, &movie, selector, params)
 			}
@@ -687,9 +704,11 @@ func chooseMenu(selector int) {
 				fmt.Println("========================================")
 				fmt.Println("|  Masukkan MovieID yang ingin dihapus ")
 				fmt.Println("========================================")
+				fmt.Print("| Masukkan MovieID : ")
 				fmt.Scan(&params)
 
 				DeleteData(&user, &movie, selector, params)
+				clearScreen()
 			case 3:
 				InputUser(selector, 2, "nil")
 			case 4:
@@ -698,7 +717,9 @@ func chooseMenu(selector int) {
 				fmt.Println("========================================")
 				fmt.Println("|  Tampilkan movie berdasarkan judul ")
 				fmt.Println("========================================")
+				fmt.Print("| Masukkan Judul : ")
 				fmt.Scan(&params)
+				clearScreen()
 
 				ReadData(&user, &movie, selector, params)
 			case 6:
@@ -707,11 +728,12 @@ func chooseMenu(selector int) {
 				fmt.Println("|  Tampilkan movie berdasarkan kategori ")
 				fmt.Println("========================================")
 				for k := 0; k < len(categoryList); k++ {
-					fmt.Printf("%d. %v \n", k+1, categoryList[k])
+					fmt.Printf("| %d. %v \n", k+1, categoryList[k])
 				}
 
-				fmt.Print("Kategori    : ")
+				fmt.Print("| Kategori    : ")
 				fmt.Scan(&x)
+				clearScreen()
 
 				params = categoryList[x-1]
 
@@ -722,11 +744,12 @@ func chooseMenu(selector int) {
 				fmt.Println("|  Tampilkan movie berdasarkan genre ")
 				fmt.Println("========================================")
 				for k := 0; k < len(genreList); k++ {
-					fmt.Printf("%d. %v \n", k+1, genreList[k])
+					fmt.Printf("| %d. %v \n", k+1, genreList[k])
 				}
 
 				fmt.Print("| Genre    : ")
 				fmt.Scan(&x)
+				clearScreen()
 
 				params = genreList[x-1]
 
@@ -735,7 +758,7 @@ func chooseMenu(selector int) {
 		}
 
 		if input > exitcase {
-			fmt.Println(" INVALID INPUT!")
+			fmt.Println("| -> INVALID INPUT! <-")
 		}
 	}
 }
