@@ -11,27 +11,19 @@ import (
 )
 
 type Age struct {
-	date  int
-	month int
-	year  int
+	date, month, year int
 }
 
 type User struct {
-	username   string
-	email      string
-	membership string
-	born       Age
+	username, email, membership string
+	born                        Age
 }
 
 type Movie struct {
-	id       string
-	title    string
-	release  int
-	genre    []string
-	category string
-	studio   string
-	rating   float32
-	agerate  string
+	id, title, category, studio, agerate string
+	release                              int
+	genre                                []string
+	rating                               float32
 }
 
 type structUser struct {
@@ -62,6 +54,11 @@ func clearScreen() {
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	}
+}
+
+func reInput() {
+	fmt.Print("\033[F")
+	fmt.Print("\033[K")
 }
 
 func InsertData(listUser *structUser, listMovie *structMovie, user User, movie Movie, selector int) {
@@ -140,10 +137,27 @@ func UpdateData(listUser *structUser, listMovie *structMovie, user User, movie M
 	tempUser := listUser
 	tempMovie := listMovie
 
+	currentTime := time.Now()
+	yearNow := currentTime.Year()
+
 	if selector == 1 {
 		for tempUser.next != nil {
 			if tempUser.next.data.username == user.username {
-				tempUser.next.data = user
+				if user.email != "" {
+					tempUser.next.data.email = user.email
+				}
+				if user.membership != "" {
+					tempUser.next.data.membership = user.membership
+				}
+				if user.born.date < 32 && 0 < user.born.date {
+					tempUser.next.data.born.date = user.born.date
+				}
+				if user.born.month < 12 && 0 < user.born.month {
+					tempUser.next.data.born.month = user.born.month
+				}
+				if user.born.year > (yearNow-5) || (yearNow-90) > user.born.year {
+					tempUser.next.data.born.year = user.born.year
+				}
 				break
 			}
 			tempUser = tempUser.next
@@ -167,28 +181,7 @@ func PrintData(listUser *structUser, listMovie *structMovie, selector int) {
 		fmt.Println("| Username       :", tempUser.data.username)
 		fmt.Println("| Email          :", tempUser.data.email)
 		fmt.Println("| Membership     :", tempUser.data.membership)
-		fmt.Println("| Tanggal Lahir  :", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
-	} else {
-		fmt.Println("| MovieID      :", tempMovie.data.id)
-		fmt.Println("| Judul        :", tempMovie.data.title)
-		fmt.Println("| Tahun Rilis  :", tempMovie.data.release)
-		fmt.Printf("| Genre        : %v\n", strings.Join(tempMovie.data.genre, " "))
-		fmt.Println("| Kategori     :", tempMovie.data.category)
-		fmt.Println("| Studio       :", tempMovie.data.studio)
-		fmt.Println("| Rating       :", tempMovie.data.rating)
-		fmt.Println("| Rate Umur    :", tempMovie.data.agerate)
-	}
-}
-
-func InputData(listUser *structUser, listMovie *structMovie, selector int) {
-	tempUser := listUser
-	tempMovie := listMovie
-
-	if selector == 1 {
-		fmt.Println("| Username       :", tempUser.data.username)
-		fmt.Println("| Email          :", tempUser.data.email)
-		fmt.Println("| Membership     :", tempUser.data.membership)
-		fmt.Println("| Tanggal Lahir  :", tempUser.data.born.date, "-", tempUser.data.born.month, "-", tempUser.data.born.year)
+		fmt.Printf("| Tanggal Lahir  : %d/%d/%d \n", tempUser.data.born.date, tempUser.data.born.month, tempUser.data.born.year)
 	} else {
 		fmt.Println("| MovieID      :", tempMovie.data.id)
 		fmt.Println("| Judul        :", tempMovie.data.title)
@@ -209,7 +202,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 		// View All
 		if selector == 1 {
 			if tempUser == nil {
-				println("| -> DATA KOSONG <-")
+				println("|  DATA KOSONG ")
 				return
 			}
 			for tempUser != nil {
@@ -219,7 +212,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 			}
 		} else {
 			if tempMovie == nil {
-				println("| -> DATA KOSONG <-")
+				println("|  DATA KOSONG ")
 				return
 			}
 			for tempMovie != nil {
@@ -232,7 +225,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 		// View By
 		if selector == 1 {
 			if tempUser == nil {
-				println("| -> DATA KOSONG <-")
+				println("|  DATA KOSONG ")
 				return
 			}
 			for tempUser != nil {
@@ -244,11 +237,11 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 			}
 		} else {
 			if tempMovie == nil {
-				println("| -> DATA KOSONG <-")
+				println("|  DATA KOSONG ")
 				return
 			}
 			for tempMovie != nil {
-				if tempMovie.data.category == params || strings.Contains(strings.Join(tempMovie.data.genre, ","), params) {
+				if tempMovie.data.category == params || strings.Contains(strings.Join(tempMovie.data.genre, ","), params) || strings.Contains(strings.ToLower(tempMovie.data.title), strings.ToLower(params)) {
 					fmt.Println("========================================")
 					PrintData(tempUser, tempMovie, 2)
 				}
@@ -258,38 +251,80 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 	}
 }
 
-func InputUser(selector int, model int) {
-	scanner := bufio.NewScanner(os.Stdin)
-	var a, b, c, d, e, x, id, category string
-	var release, date, month, year, cat int
-	var rating float32
-	var genremov []string
+func ValidateData(listUser *structUser, listMovie *structMovie, selector int, params string) bool {
+	tempUser := listUser.next
+	tempMovie := listMovie.next
 
+	if selector == 1 {
+		if tempUser == nil {
+			println("|  DATA KOSONG ")
+			return false
+		}
+		for tempUser != nil {
+			if tempUser.data.username == params {
+				fmt.Println("========================================")
+				PrintData(tempUser, tempMovie, 1)
+				return true
+			}
+			tempUser = tempUser.next
+		}
+
+	} else {
+		if tempMovie == nil {
+			println("|  DATA KOSONG ")
+			return false
+		}
+		for tempMovie != nil {
+			if tempMovie.data.id == params {
+				fmt.Println("========================================")
+				PrintData(tempUser, tempMovie, 2)
+				return true
+			}
+			tempMovie = tempMovie.next
+		}
+	}
+
+	return false
+}
+
+func InputUser(selector int, model int, params string) {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	var x string
 	currentTime := time.Now()
 	yearNow := currentTime.Year()
 
+	// User
+	var username, email, membership string
+	var date, month, year int
+
+	//Movie
+	var id, title, category, studio, agerate string
+	var release, cat int
+	var rating float32
+	var genre []string
 	scanner.Scan()
 
 	if model == 1 {
 
-		for x != "t" {
+		for {
 			fmt.Println("========================================")
-			fmt.Print("|\t-> MASUKKAN DATA ")
+			fmt.Print("|\t MASUKKAN DATA ")
 			if selector == 1 {
 
-				fmt.Println("USER <-")
+				fmt.Println("USER ")
 				fmt.Println("========================================")
 				fmt.Print("| Username   : ")
-				fmt.Scan(&a)
+				fmt.Scan(&username)
 
 				scanner.Scan()
 
 				fmt.Print("| Email      : ")
 				scanner.Scan()
-				b = scanner.Text()
+				email = scanner.Text()
 				fmt.Print("| Membership : ")
 				scanner.Scan()
-				c = scanner.Text()
+				membership = scanner.Text()
 
 				fmt.Println("| TANGGAL LAHIR")
 				for {
@@ -297,27 +332,30 @@ func InputUser(selector int, model int) {
 					fmt.Scan(&date)
 
 					if date > 31 || 1 > date {
-						fmt.Println("Yakin Deck ?")
+						reInput()
+						fmt.Println("|   ! Invalid Input !")
 					} else {
 						break
 					}
 				}
 
 				for {
-					fmt.Print("| Bulan   : ")
+					fmt.Print("|   Bulan   : ")
 					fmt.Scan(&month)
 					if month > 12 || 1 > month {
-						fmt.Println("Yakin Deck ?")
+						reInput()
+						fmt.Println("|   ! Invalid Input !")
 					} else {
 						break
 					}
 				}
 
 				for {
-					fmt.Print("| Tahun   : ")
+					fmt.Print("|   Tahun   : ")
 					fmt.Scan(&year)
 					if year > (yearNow-5) || (yearNow-90) > year {
-						fmt.Println("Yakin Deck ?")
+						reInput()
+						fmt.Println("|   ! Invalid Input !")
 					} else {
 						break
 					}
@@ -325,15 +363,15 @@ func InputUser(selector int, model int) {
 
 				scanner.Scan()
 			} else {
-				genremov = []string{}
+				genre = []string{}
 				movieID++
 				id = fmt.Sprintf("movie-%d", movieID)
 
-				fmt.Println("MOVIE <-")
+				fmt.Println("MOVIE ")
 				fmt.Println("========================================")
 				fmt.Print("| Judul       : ")
 				scanner.Scan()
-				a = scanner.Text()
+				title = scanner.Text()
 
 				fmt.Print("| Tahun Rilis : ")
 				fmt.Scan(&release)
@@ -344,18 +382,20 @@ func InputUser(selector int, model int) {
 				}
 				fmt.Println("|   99. Exit")
 
+				fmt.Println("| Genre	: ")
 				var genrex int
-				for genrex != 99 {
+				for {
 					fmt.Print("|   Tambahkan Genre : ")
 					fmt.Scan(&genrex)
-					fmt.Print("\033[F")
-					fmt.Print("\033[K")
-					if genrex != 99 {
-						if strings.Contains(strings.Join(genremov, ""), genreList[genrex-1]) {
+					reInput()
+					if genrex == 99 {
+						break
+					} else {
+						if strings.Contains(strings.Join(genre, ""), genreList[genrex-1]) {
 							fmt.Println("|   ! Genre Sudah Dipilih , Silahkan Tambahkan Genre Lain !")
 						} else {
 							fmt.Println("|   -", genreList[genrex-1], "Telah Ditambahkan")
-							genremov = append(genremov, genreList[genrex-1])
+							genre = append(genre, genreList[genrex-1])
 						}
 					}
 				}
@@ -373,7 +413,7 @@ func InputUser(selector int, model int) {
 				scanner.Scan()
 				fmt.Print("| Studio      : ")
 				scanner.Scan()
-				d = scanner.Text()
+				studio = scanner.Text()
 
 				fmt.Print("| Rating      : ")
 				fmt.Scan(&rating)
@@ -381,38 +421,39 @@ func InputUser(selector int, model int) {
 				scanner.Scan()
 				fmt.Print("| Rating Umur : ")
 				scanner.Scan()
-				e = scanner.Text()
+				agerate = scanner.Text()
 			}
 
 			// Data Skeleton
-			dataUser := User{username: a, email: b, membership: c, born: Age{date, month, year}}
-			dataMovie := Movie{id: id, title: a, release: release, genre: genremov, category: category, studio: d, rating: rating, agerate: e}
+			dataUser := User{username: username, email: email, membership: membership, born: Age{date, month, year}}
+			dataMovie := Movie{id: id, title: title, release: release, genre: genre, category: category, studio: studio, rating: rating, agerate: agerate}
 
 			// Insert Data
 			InsertData(&user, &movie, dataUser, dataMovie, selector)
 
-			// Break Looping
-			// scanner.Scan() /* Reset fmt.Scan */
-			fmt.Print("| TAMBAH DATA ? [ y / t ] : ")
-			scanner.Scan()
-			x = strings.TrimSpace(scanner.Text())
+			fmt.Println("|---------------------------------------")
+			fmt.Print("| Menambah Data Lain ? (y/t) => ")
+			fmt.Scan(&x)
+			if x == "t" {
+				break
+			} else {
+				fmt.Println("|---------------------------------------")
+				scanner.Scan()
+			}
 		}
 	} else {
-		fmt.Print("| -> EDIT DATA ")
+		fmt.Print("|  EDIT DATA ")
 		if selector == 1 {
-			fmt.Println("USER <-")
+			fmt.Println("USER ")
 
-			fmt.Print("| Username   : ")
-			scanner.Scan()
-			a = scanner.Text()
 			fmt.Print("| Email      : ")
 			scanner.Scan()
-			b = scanner.Text()
+			email = scanner.Text()
 			fmt.Print("| Membership : ")
 			scanner.Scan()
-			c = scanner.Text()
+			membership = scanner.Text()
 
-			fmt.Println("| TANGGAL LAHIR")
+			fmt.Println("| Tanggal Lahir")
 			for {
 				fmt.Print("|   Tanggal : ")
 				fmt.Scan(&date)
@@ -446,13 +487,10 @@ func InputUser(selector int, model int) {
 
 			scanner.Scan()
 		} else {
-			fmt.Println("MOVIE <-")
-			fmt.Print("| Movie-ID    : ")
-			scanner.Scan()
-			id = scanner.Text()
+			fmt.Println("MOVIE ")
 			fmt.Print("| Judul       : ")
 			scanner.Scan()
-			a = scanner.Text()
+			title = scanner.Text()
 
 			fmt.Print("| Tahun Rilis : ")
 			fmt.Scan(&release)
@@ -462,16 +500,20 @@ func InputUser(selector int, model int) {
 			}
 			fmt.Println("| 99. Exit")
 
-			var genrex int
 			fmt.Println("| Genre	: ")
-			for genrex != 99 {
+			var genrex int
+			for {
+				fmt.Print("|   Tambahkan Genre : ")
 				fmt.Scan(&genrex)
-				if genrex != 99 {
-					if strings.Contains(strings.Join(genremov, ","), genreList[genrex-1]) {
-						fmt.Println("| -> GENRE SUDAH DIPILIH <-")
+				reInput()
+				if genrex == 99 {
+					break
+				} else {
+					if strings.Contains(strings.Join(genre, ""), genreList[genrex-1]) {
+						fmt.Println("|   ! Genre Sudah Dipilih , Silahkan Tambahkan Genre Lain !")
 					} else {
-						fmt.Print(",")
-						genremov = append(genremov, genreList[genrex-1])
+						fmt.Println("|   -", genreList[genrex-1], "Telah Ditambahkan")
+						genre = append(genre, genreList[genrex-1])
 					}
 				}
 			}
@@ -487,19 +529,19 @@ func InputUser(selector int, model int) {
 			scanner.Scan()
 			fmt.Print("| Studio      : ")
 			scanner.Scan()
-			d = scanner.Text()
+			studio = scanner.Text()
 
 			fmt.Print("| Rating      : ")
 			fmt.Scan(&rating)
 			scanner.Scan()
 			fmt.Print("| Rating Umur : ")
 			scanner.Scan()
-			e = scanner.Text()
+			agerate = scanner.Text()
 		}
 
 		// Data Skeleton
-		dataUser := User{username: a, email: b, membership: c, born: Age{date, month, year}}
-		dataMovie := Movie{id: id, title: a, release: release, genre: genremov, category: category, studio: d, rating: rating, agerate: e}
+		dataUser := User{username: params, email: email, membership: membership, born: Age{date, month, year}}
+		dataMovie := Movie{id: params, title: title, release: release, genre: genre, category: category, studio: studio, rating: rating, agerate: agerate}
 
 		// Update Data
 		UpdateData(&user, &movie, dataUser, dataMovie, selector)
@@ -511,10 +553,11 @@ func mainMenu() {
 	for input != 3 {
 
 		fmt.Println("========================================")
-		fmt.Println(" _  _ ___ ___ _____ ___ _    _____  __")
-		fmt.Println("| \\| | __| __|_   _| __| |  |_ _\\ \\/ /")
-		fmt.Println("| .` | _|| _|  | | | _|| |__ | | >  < ")
-		fmt.Println("|_|\\_|___|___| |_| |_| |____|___/_/\\_\\")
+		fmt.Println("|  _  _ ___ ___ _____ ___ _    _____  __")
+		fmt.Println("| | \\| | __| __|_   _| __| |  |_ _\\ \\/ /")
+		fmt.Println("| | .` | _|| _|  | | | _|| |__ | | >  < ")
+		fmt.Println("| |_|\\_|___|___| |_| |_| |____|___/_/\\_\\")
+		fmt.Println("|")
 		fmt.Println("========================================")
 		fmt.Println("| 1. Manage User  ")
 		fmt.Println("| 2. Manage Movie  ")
@@ -528,9 +571,9 @@ func mainMenu() {
 			clearScreen()
 			chooseMenu(input)
 		} else if input != 3 {
-			fmt.Println("| -> INVALID INPUT! <-")
+			fmt.Println("|  INVALID INPUT! ")
 		} else {
-			fmt.Println("| -> Exiting Program <-")
+			fmt.Println("|  Exiting Program ")
 		}
 	}
 }
@@ -555,7 +598,6 @@ func chooseMenu(selector int) {
 		fmt.Printf("| 2. Delete %s                \n", masterData)
 		fmt.Printf("| 3. Edit %s                  \n", masterData)
 		fmt.Printf("| 4. View All %s              \n", masterData)
-
 		if selector == 1 {
 			fmt.Printf("| 5. View %s By Username      \n", masterData)
 			fmt.Println("| 6. Back                     ")
@@ -565,10 +607,8 @@ func chooseMenu(selector int) {
 			fmt.Printf("| 7. View %s By Genre      \n", masterData)
 			fmt.Println("| 8. Back                      ")
 		}
-
 		fmt.Println("========================================")
-		// Select Menu
-		fmt.Print("| Pilih Menu: ")
+		fmt.Print("| Pilih Menu : ")
 		fmt.Scan(&input)
 
 		clearScreen()
@@ -576,21 +616,31 @@ func chooseMenu(selector int) {
 		if selector == 1 {
 			switch input {
 			case 1:
-				InputUser(selector, 1)
+				InputUser(selector, 1, "nil")
 			case 2:
 				fmt.Println("========================================")
-				fmt.Println("| -> Masukkan Username yang ingin dihapus <-")
+				fmt.Println("|  Masukkan Username yang ingin dihapus ")
 				fmt.Println("========================================")
 				fmt.Scan(&params)
 
 				DeleteData(&user, &movie, selector, params)
 			case 3:
-				InputUser(selector, 2)
+				fmt.Println("========================================")
+				fmt.Println("|  Masukkan Username yang ingin diupdate ")
+				fmt.Println("========================================")
+				fmt.Scan(&params)
+				if ValidateData(&user, &movie, selector, params) {
+					fmt.Println("========================================")
+					InputUser(selector, 2, params)
+					fmt.Println("========================================")
+				} else {
+					fmt.Println("User Tidak Ditemukan")
+				}
 			case 4:
 				ReadData(&user, &movie, selector, "all")
 			case 5:
 				fmt.Println("========================================")
-				fmt.Println("| -> Masukkan username yang ingin dilihat <-")
+				fmt.Println("| Masukkan Username yang ingin dilihat ")
 				fmt.Println("========================================")
 				fmt.Scan(&params)
 
@@ -599,21 +649,21 @@ func chooseMenu(selector int) {
 		} else {
 			switch input {
 			case 1:
-				InputUser(selector, 1)
+				InputUser(selector, 1, "nil")
 			case 2:
 				fmt.Println("========================================")
-				fmt.Println("| -> Masukkan MovieID yang ingin dihapus <-")
+				fmt.Println("|  Masukkan MovieID yang ingin dihapus ")
 				fmt.Println("========================================")
 				fmt.Scan(&params)
 
 				DeleteData(&user, &movie, selector, params)
 			case 3:
-				InputUser(selector, 2)
+				InputUser(selector, 2, "nil")
 			case 4:
 				ReadData(&user, &movie, selector, "all")
 			case 5:
 				fmt.Println("========================================")
-				fmt.Println("| -> Tampilkan movie berdasarkan judul <-")
+				fmt.Println("|  Tampilkan movie berdasarkan judul ")
 				fmt.Println("========================================")
 				fmt.Scan(&params)
 
@@ -621,7 +671,7 @@ func chooseMenu(selector int) {
 			case 6:
 				var x int
 				fmt.Println("========================================")
-				fmt.Println("| -> Tampilkan movie berdasarkan kategori <-")
+				fmt.Println("|  Tampilkan movie berdasarkan kategori ")
 				fmt.Println("========================================")
 				for k := 0; k < len(categoryList); k++ {
 					fmt.Printf("%d. %v \n", k+1, categoryList[k])
@@ -636,7 +686,7 @@ func chooseMenu(selector int) {
 			case 7:
 				var x int
 				fmt.Println("========================================")
-				fmt.Println("| -> Tampilkan movie berdasarkan genre <-")
+				fmt.Println("|  Tampilkan movie berdasarkan genre ")
 				fmt.Println("========================================")
 				for k := 0; k < len(genreList); k++ {
 					fmt.Printf("%d. %v \n", k+1, genreList[k])
