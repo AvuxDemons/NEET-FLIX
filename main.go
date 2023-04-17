@@ -24,7 +24,7 @@ type Movie struct {
 	id, title, category, studio, agerate string
 	release                              int
 	genre                                []string
-	rating                               float32
+	rating                               float64
 }
 
 type structUser struct {
@@ -164,7 +164,27 @@ func UpdateData(listUser *structUser, listMovie *structMovie, user User, movie M
 	} else {
 		for tempMovie.next != nil {
 			if tempMovie.next.data.id == movie.id {
-				tempMovie.next.data = movie
+				if movie.title != "-" {
+					tempMovie.next.data.title = movie.title
+				}
+				if movie.release != 0 {
+					tempMovie.next.data.release = movie.release
+				}
+				if len(movie.genre) != 0 {
+					tempMovie.next.data.genre = movie.genre
+				}
+				if movie.category != "-" {
+					tempMovie.next.data.category = movie.category
+				}
+				if movie.studio != "-" {
+					tempMovie.next.data.studio = movie.studio
+				}
+				if movie.rating != 0 {
+					tempMovie.next.data.rating = movie.rating
+				}
+				if movie.agerate != "-" {
+					tempMovie.next.data.agerate = movie.agerate
+				}
 				break
 			}
 			tempMovie = tempMovie.next
@@ -240,7 +260,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 				return
 			}
 			for tempMovie != nil {
-				if tempMovie.data.category == params || strings.Contains(strings.Join(tempMovie.data.genre, ","), params) || strings.Contains(strings.ToLower(tempMovie.data.title), strings.ToLower(params)) {
+				if tempMovie.data.id == params || tempMovie.data.category == params || strings.Contains(strings.Join(tempMovie.data.genre, ","), params) || strings.Contains(strings.ToLower(tempMovie.data.title), strings.ToLower(params)) {
 					fmt.Println("========================================")
 					PrintData(tempUser, tempMovie, 2)
 				}
@@ -288,7 +308,7 @@ func InputUser(selector int, model int, params string) {
 	//Movie
 	var id, title, category, studio, agerate string
 	var release, cat, age, ship int
-	var rating float32
+	var rating float64
 	var genre []string
 
 	masterData := "Movie"
@@ -421,8 +441,16 @@ func InputUser(selector int, model int, params string) {
 				scanner.Scan()
 				studio = scanner.Text()
 
-				fmt.Print("| Rating      : ")
-				fmt.Scan(&rating)
+				for {
+					fmt.Print("| Rating      : ")
+					fmt.Scan(&rating)
+					if rating > 100 || rating < 0 {
+						fmt.Println("|   ! Invalid Input !")
+						reInput()
+					} else {
+						break
+					}
+				}
 
 				fmt.Println("| Batasan Umur")
 				for k := 0; k < len(ageRate); k++ {
@@ -450,7 +478,6 @@ func InputUser(selector int, model int, params string) {
 				break
 			} else {
 				fmt.Println("|---------------------------------------")
-				scanner.Scan()
 			}
 		}
 	} else {
@@ -543,7 +570,14 @@ func InputUser(selector int, model int, params string) {
 			title = scanner.Text()
 
 			fmt.Print("| Tahun Rilis : ")
-			fmt.Scan(&release)
+			var releases string
+			fmt.Scan(&releases)
+			if releases != "-" {
+				change, _ := strconv.Atoi(releases)
+				release = change
+			} else {
+				release = 0
+			}
 
 			fmt.Println("| Genre	")
 			for i := 0; i < len(genreList); i++ {
@@ -551,19 +585,20 @@ func InputUser(selector int, model int, params string) {
 			}
 			fmt.Println("|   99. Exit")
 
-			var genrex int
+			var genres string
 			for {
 				fmt.Print("|  Pilih : ")
-				fmt.Scan(&genrex)
+				fmt.Scan(&genres)
+				change, _ := strconv.Atoi(genres)
 				reInput()
-				if genrex == 99 {
+				if change == 99 || genres == "-" {
 					break
 				} else {
-					if strings.Contains(strings.Join(genre, ""), genreList[genrex-1]) {
+					if strings.Contains(strings.Join(genre, ""), genreList[change-1]) {
 						fmt.Println("|   ! Genre Sudah Dipilih , Silahkan Tambahkan Genre Lain !")
 					} else {
-						fmt.Println("|   -", genreList[genrex-1], "Telah Ditambahkan")
-						genre = append(genre, genreList[genrex-1])
+						fmt.Println("|   -", genreList[change-1], "Telah Ditambahkan")
+						genre = append(genre, genreList[change-1])
 					}
 				}
 			}
@@ -583,14 +618,27 @@ func InputUser(selector int, model int, params string) {
 			scanner.Scan()
 			studio = scanner.Text()
 
-			fmt.Print("| Rating      : ")
-			fmt.Scan(&rating)
-			if rating < {
-				
+			for {
+				fmt.Print("| Rating      : ")
+				var ratings string
+				fmt.Scan(&ratings)
+				if ratings != "-" {
+					change, _ := strconv.ParseFloat(ratings, 64)
+					if change > 100 || change < 0 {
+						fmt.Println("|   ! Invalid Input !")
+						reInput()
+					} else {
+						rating = change
+						break
+					}
+				} else {
+					rating = 0
+					break
+				}
 			}
-Batasan Umur")
-			for k := 0; k < 
-			fmt.Println("| len(ageRate); k++ {
+
+			fmt.Println("| Batasan Umur")
+			for k := 0; k < len(ageRate); k++ {
 				fmt.Printf("|   %d. %v \n", k+1, ageRate[k])
 			}
 			fmt.Print("|  Pilih : ")
@@ -724,7 +772,21 @@ func chooseMenu(selector int) {
 
 				DeleteData(&user, &movie, selector, params)
 			case 3:
-				InputUser(selector, 2, "nil")
+				fmt.Println("========================================")
+				fmt.Println("|  Masukkan Movie yang ingin diupdate ")
+				fmt.Println("========================================")
+				fmt.Print("| Masukkan Movie ID : ")
+				fmt.Scan(&params)
+				if ValidateData(&user, &movie, selector, params) {
+					ReadData(&user, &movie, selector, params)
+					fmt.Println("========================================")
+					InputUser(selector, 2, params)
+					fmt.Println("========================================")
+					clearScreen()
+				} else {
+					reInput()
+					fmt.Println("|	Movie Tidak Ditemukan!")
+				}
 			case 4:
 				ReadData(&user, &movie, selector, "all")
 			case 5:
@@ -758,6 +820,7 @@ func chooseMenu(selector int) {
 					fmt.Printf("%d. %v \n", k+1, genreList[k])
 				}
 
+				fmt.Println("========================================")
 				fmt.Print("| Genre    : ")
 				fmt.Scan(&x)
 
