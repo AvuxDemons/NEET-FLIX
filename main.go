@@ -754,6 +754,7 @@ func chooseMenu(selector int) {
 				fmt.Println("========================================")
 				fmt.Println("|  Masukkan Username yang ingin dihapus ")
 				fmt.Println("========================================")
+				fmt.Print("| Masukkan Username : ")
 				fmt.Scan(&params)
 
 				DeleteData(&user, &movie, selector, params)
