@@ -652,6 +652,7 @@ func InputUser(selector int, model int, params string) {
 					} else {
 						fmt.Println("|   -", categoryList[change-1], "Telah Dipilih")
 						category = categoryList[change-1]
+						break
 					}
 				} else {
 					category = "-"
@@ -699,9 +700,11 @@ func InputUser(selector int, model int, params string) {
 					} else {
 						fmt.Println("|   -", ageRate[change-1], "Telah Dipilih")
 						agerate = ageRate[change-1]
+						break
 					}
 				} else {
 					agerate = "-"
+					break
 				}
 			}
 		}
