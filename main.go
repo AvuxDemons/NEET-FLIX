@@ -417,7 +417,7 @@ func InputUser(selector int, model int, params string) {
 				for i := 0; i < len(genreList); i++ {
 					fmt.Printf("|   %d. %v \n", i+1, genreList[i])
 				}
-				fmt.Println("|  ", len(genreList)+1, ". Exit")
+				fmt.Printf("|   %d. Exit \n", len(genreList)+1)
 
 				var genrex int
 				for {
@@ -427,7 +427,11 @@ func InputUser(selector int, model int, params string) {
 					if genrex > len(genreList)+1 || genrex < 1 {
 						fmt.Println("|   ! Invalid Input !")
 					} else if genrex == len(genreList)+1 {
-						break
+						if len(genre) != 0 {
+							break
+						} else {
+							fmt.Println("|   ! Tambahkan Minimal 1 Genre !")
+						}
 					} else {
 						if strings.Contains(strings.Join(genre, ""), genreList[genrex-1]) {
 							fmt.Println("|   ! Genre Sudah Dipilih , Silahkan Tambahkan Genre Lain !")
@@ -446,15 +450,15 @@ func InputUser(selector int, model int, params string) {
 					fmt.Print("|  Pilih : ")
 					fmt.Scan(&cat)
 					reInput()
-					if cat > len(categoryList)+1 || cat < 1 {
-						fmt.Print("| 	! Invalid Input !")
-
+					if cat > len(categoryList) || cat < 1 {
+						fmt.Println("|  ! Invalid Input !")
 					} else {
-						fmt.Println("|   -", categoryList[cat-1], "Telah Dipilih")
+						fmt.Println("|  -", categoryList[cat-1], "Telah Dipilih")
 						category = categoryList[cat-1]
 						break
 					}
 				}
+
 				scanner.Scan()
 				fmt.Print("| Studio      : ")
 				scanner.Scan()
@@ -463,9 +467,9 @@ func InputUser(selector int, model int, params string) {
 				for {
 					fmt.Print("| Rating      : ")
 					fmt.Scan(&rating)
-					if rating > 100 || rating < 0 {
-						fmt.Println("|   ! Invalid Input !")
+					if rating > 100 || rating < 1 {
 						reInput()
+						fmt.Println("| ! Invalid Input !")
 					} else {
 						break
 					}
@@ -475,11 +479,18 @@ func InputUser(selector int, model int, params string) {
 				for k := 0; k < len(ageRate); k++ {
 					fmt.Printf("|   %d. %v \n", k+1, ageRate[k])
 				}
-				fmt.Print("|  Pilih : ")
-				fmt.Scan(&age)
-				reInput()
-				fmt.Println("|   -", ageRate[age-1], "Telah Dipilih")
-				agerate = ageRate[age-1]
+				for {
+					fmt.Print("|  Pilih : ")
+					fmt.Scan(&age)
+					reInput()
+					if age > len(ageRate) || age < 1 {
+						fmt.Println("|   ! Invalid Input !")
+					} else {
+						fmt.Println("|   -", ageRate[age-1], "Telah Dipilih")
+						agerate = ageRate[age-1]
+						break
+					}
+				}
 			}
 
 			// Data Skeleton
@@ -525,13 +536,12 @@ func InputUser(selector int, model int, params string) {
 				var dates string
 				fmt.Scan(&dates)
 				if dates != "-" {
+					reInput()
 					change, _ := strconv.Atoi(dates)
 					if change > 31 || 1 > change {
-						reInput()
 						fmt.Println("|   ! Invalid Input !")
 					} else {
 						date = change
-						reInput()
 						break
 					}
 				} else {
@@ -565,13 +575,12 @@ func InputUser(selector int, model int, params string) {
 				var years string
 				fmt.Scan(&years)
 				if years != "-" {
+					reInput()
 					change, _ := strconv.Atoi(years)
 					if change > (yearNow-5) || (yearNow-90) > change {
-						reInput()
 						fmt.Println("|   ! Invalid Input !")
 					} else {
 						year = change
-						reInput()
 						break
 					}
 				} else {
@@ -604,17 +613,20 @@ func InputUser(selector int, model int, params string) {
 			for i := 0; i < len(genreList); i++ {
 				fmt.Printf("|   %d. %v \n", i+1, genreList[i])
 			}
-			fmt.Println("|  ", len(genreList)+1, ". Exit")
+			fmt.Printf("|   %d. Exit \n", len(genreList)+1)
 
 			var genres string
 			for {
 				fmt.Print("|  Pilih : ")
 				fmt.Scan(&genres)
 				change, _ := strconv.Atoi(genres)
-				reInput()
 				if change == len(genreList)+1 || genres == "-" {
 					break
+				} else if change > len(genreList)+1 {
+					reInput()
+					fmt.Println("|   ! Invalid Input !")
 				} else {
+					reInput()
 					if strings.Contains(strings.Join(genre, ""), genreList[change-1]) {
 						fmt.Println("|   ! Genre Sudah Dipilih , Silahkan Tambahkan Genre Lain !")
 					} else {
@@ -628,16 +640,23 @@ func InputUser(selector int, model int, params string) {
 			for k := 0; k < len(categoryList); k++ {
 				fmt.Printf("|   %d. %v \n", k+1, categoryList[k])
 			}
-			fmt.Print("|  Pilih : ")
-			var cats string
-			fmt.Scan(&cats)
-			if cats != "-" {
-				change, _ := strconv.Atoi(cats)
-				reInput()
-				fmt.Println("|   -", categoryList[change-1], "Telah Dipilih")
-				category = categoryList[change-1]
-			} else {
-				category = "-"
+			for {
+				fmt.Print("|  Pilih : ")
+				var cats string
+				fmt.Scan(&cats)
+				if cats != "-" {
+					reInput()
+					change, _ := strconv.Atoi(cats)
+					if change > len(categoryList) || change < 1 {
+						fmt.Println("|   ! Invalid Input !")
+					} else {
+						fmt.Println("|   -", categoryList[change-1], "Telah Dipilih")
+						category = categoryList[change-1]
+					}
+				} else {
+					category = "-"
+					break
+				}
 			}
 
 			scanner.Scan()
@@ -651,9 +670,9 @@ func InputUser(selector int, model int, params string) {
 				fmt.Scan(&ratings)
 				if ratings != "-" {
 					change, _ := strconv.ParseFloat(ratings, 64)
-					if change > 100 || change < 0 {
-						fmt.Println("|   ! Invalid Input !")
+					if change > 100 || change < 1 {
 						reInput()
+						fmt.Println("|   ! Invalid Input !")
 					} else {
 						rating = change
 						break
@@ -668,16 +687,22 @@ func InputUser(selector int, model int, params string) {
 			for k := 0; k < len(ageRate); k++ {
 				fmt.Printf("|   %d. %v \n", k+1, ageRate[k])
 			}
-			fmt.Print("|  Pilih : ")
-			var ages string
-			fmt.Scan(&ages)
-			if ages != "-" {
-				change, _ := strconv.Atoi(ages)
-				reInput()
-				fmt.Println("|   -", ageRate[change-1], "Telah Dipilih")
-				agerate = ageRate[change-1]
-			} else {
-				agerate = "-"
+			for {
+				fmt.Print("|  Pilih : ")
+				var ages string
+				fmt.Scan(&ages)
+				if ages != "-" {
+					reInput()
+					change, _ := strconv.Atoi(ages)
+					if change > len(ageRate) || change < 1 {
+						fmt.Println("|   ! Invalid Input !")
+					} else {
+						fmt.Println("|   -", ageRate[change-1], "Telah Dipilih")
+						agerate = ageRate[change-1]
+					}
+				} else {
+					agerate = "-"
+				}
 			}
 		}
 
