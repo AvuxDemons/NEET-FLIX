@@ -465,7 +465,11 @@ func InputUser(selector int, model int, params string) {
 			}
 			fmt.Print("| Pilih : ")
 			fmt.Scan(&ship)
-			membership = userMembership[ship-1]
+			if ship != 0 {
+				membership = userMembership[ship-1]
+			} else {
+				membership = "-"
+			}
 
 			fmt.Println("| Tanggal Lahir")
 			for {
@@ -581,9 +585,12 @@ func InputUser(selector int, model int, params string) {
 
 			fmt.Print("| Rating      : ")
 			fmt.Scan(&rating)
-
-			fmt.Println("| Batasan Umur")
-			for k := 0; k < len(ageRate); k++ {
+			if rating < {
+				
+			}
+Batasan Umur")
+			for k := 0; k < 
+			fmt.Println("| len(ageRate); k++ {
 				fmt.Printf("|   %d. %v \n", k+1, ageRate[k])
 			}
 			fmt.Print("|  Pilih : ")
