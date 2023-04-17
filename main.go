@@ -446,6 +446,7 @@ func InputUser(selector int, model int, params string) {
 			fmt.Print("| Menambah Data Lain ? (y/t) => ")
 			fmt.Scan(&x)
 			if x == "t" {
+				clearScreen()
 				break
 			} else {
 				fmt.Println("|---------------------------------------")
@@ -462,6 +463,7 @@ func InputUser(selector int, model int, params string) {
 			for k := 0; k < len(userMembership); k++ {
 				fmt.Printf("|   %d. %v \n", k+1, userMembership[k])
 			}
+			fmt.Print("| Pilih : ")
 			fmt.Scan(&ship)
 			membership = userMembership[ship-1]
 
@@ -680,12 +682,14 @@ func chooseMenu(selector int) {
 				fmt.Println("========================================")
 				fmt.Println("|  Masukkan Username yang ingin diupdate ")
 				fmt.Println("========================================")
+				fmt.Print("| Masukkan Username : ")
 				fmt.Scan(&params)
 				if ValidateData(&user, &movie, selector, params) {
 					ReadData(&user, &movie, selector, params)
 					fmt.Println("========================================")
 					InputUser(selector, 2, params)
 					fmt.Println("========================================")
+					clearScreen()
 				} else {
 					reInput()
 					fmt.Println("User Tidak Ditemukan")
@@ -696,6 +700,7 @@ func chooseMenu(selector int) {
 				fmt.Println("========================================")
 				fmt.Println("| Masukkan Username yang ingin dilihat ")
 				fmt.Println("========================================")
+				fmt.Print("| Masukkan Username : ")
 				fmt.Scan(&params)
 
 				ReadData(&user, &movie, selector, params)
