@@ -511,7 +511,8 @@ func InputUser(selector int, model int, params string) {
 			}
 		}
 	} else {
-		fmt.Println("|\t Masukkan Data", masterData)
+		fmt.Println("|\t Masukkan Data Baru", masterData)
+		fmt.Println("|   ( - | Untuk tidak merubah data ) ", masterData)
 		fmt.Println("========================================")
 		if selector == 1 {
 
@@ -619,14 +620,13 @@ func InputUser(selector int, model int, params string) {
 			for {
 				fmt.Print("|  Pilih : ")
 				fmt.Scan(&genres)
+				reInput()
 				change, _ := strconv.Atoi(genres)
 				if change == len(genreList)+1 || genres == "-" {
 					break
 				} else if change > len(genreList)+1 {
-					reInput()
 					fmt.Println("|   ! Invalid Input !")
 				} else {
-					reInput()
 					if strings.Contains(strings.Join(genre, ""), genreList[change-1]) {
 						fmt.Println("|   ! Genre Sudah Dipilih , Silahkan Tambahkan Genre Lain !")
 					} else {
