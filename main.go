@@ -222,7 +222,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 		if selector == 1 {
 			if tempUser == nil {
 				fmt.Println("========================================")
-				println("|  DATA KOSONG ")
+				println("|              DATA KOSONG              ")
 				return
 			}
 			for tempUser != nil {
@@ -233,7 +233,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 		} else {
 			if tempMovie == nil {
 				fmt.Println("========================================")
-				println("|  DATA KOSONG ")
+				println("|              DATA KOSONG              ")
 				return
 			}
 			for tempMovie != nil {
@@ -247,7 +247,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 		if selector == 1 {
 			if tempUser == nil {
 				fmt.Println("========================================")
-				println("|  DATA KOSONG ")
+				println("|              DATA KOSONG              ")
 				return
 			}
 			for tempUser != nil {
@@ -260,7 +260,7 @@ func ReadData(listUser *structUser, listMovie *structMovie, selector int, params
 		} else {
 			if tempMovie == nil {
 				fmt.Println("========================================")
-				println("|  DATA KOSONG ")
+				println("|              DATA KOSONG              ")
 				return
 			}
 			for tempMovie != nil {
@@ -512,7 +512,7 @@ func InputUser(selector int, model int, params string) {
 		}
 	} else {
 		fmt.Println("|\t Masukkan Data Baru", masterData)
-		fmt.Println("|   ( - | Untuk tidak merubah data ) ", masterData)
+		fmt.Println("|		( Untuk tidak merubah data ) ", masterData)
 		fmt.Println("========================================")
 		if selector == 1 {
 
