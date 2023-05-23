@@ -63,7 +63,7 @@ func reInput() {
 	fmt.Print("\033[K")
 }
 
-func InsertData(listUser *structUser, listMovie *structMovie, user User, movie Movie, selector int) {
+func InsertMovie(listUser *structUser, listMovie *structMovie, user User, movie Movie, selector int) {
 	var tempUser structUser
 	var tempMovie structMovie
 	if selector == 1 {
@@ -498,7 +498,7 @@ func InputUser(selector int, model int, params string) {
 			dataMovie := Movie{id: id, title: title, release: release, genre: genre, category: category, studio: studio, rating: rating, agerate: agerate}
 
 			// Insert Data
-			InsertData(&user, &movie, dataUser, dataMovie, selector)
+			InsertMovie(&user, &movie, dataUser, dataMovie, selector)
 
 			fmt.Println("|---------------------------------------")
 			fmt.Print("| Menambah Data Lain ? (y/t) => ")

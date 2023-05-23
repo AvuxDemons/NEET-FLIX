@@ -6,7 +6,7 @@ import (
 )
 
 // ✅ Insert Data To Database
-func InsertData(movie entity.Movie) {
+func InsertMovie(movie entity.Movie) {
 	tempMovie := entity.DatabaseMovie{}
 	tempMovie.Data = movie
 	temp := &database.DBMovie
@@ -30,6 +30,37 @@ func ViewAllMovie() []entity.Movie {
 		temp = temp.Next
 	}
 	return movies
+}
+
+func UpdateMovie(movie entity.Movie) {
+	temp := &database.DBMovie
+	for temp.Next != nil {
+		if temp.Next.Data.Id == movie.Id {
+			if movie.Title != "-" {
+				temp.Next.Data.Title = movie.Title
+			}
+			if movie.Release != 0 {
+				temp.Next.Data.Release = movie.Release
+			}
+			if len(movie.Genre) != 0 {
+				temp.Next.Data.Genre = movie.Genre
+			}
+			if len(movie.Category) != 0 {
+				temp.Next.Data.Category = movie.Category
+			}
+			if movie.Studio != "-" {
+				temp.Next.Data.Studio = movie.Studio
+			}
+			if movie.Rating != 0 {
+				temp.Next.Data.Rating = movie.Rating
+			}
+			if movie.Agerate != "-" {
+				temp.Next.Data.Agerate = movie.Agerate
+			}
+			break
+		}
+		temp = temp.Next
+	}
 }
 
 // ✅ Delete Data

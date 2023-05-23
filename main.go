@@ -29,10 +29,16 @@ func main() {
 	// ✅ Delete Data
 	model.DeleteData(2)
 
-	// ✅ View Raw Data
-	fmt.Println(model.ViewAllMovie())
+	// ✅ View Data
+	fmt.Println("\n---- VIEW ALL DATA ----")
+	view.PrintAllMovie()
+
+	// tes edit
+	fmt.Println("\n---- EDIT DATA ----")
+	view.UpdateMovie()
 
 	// ✅ View Data
 	fmt.Println("\n---- VIEW ALL DATA ----")
 	view.PrintAllMovie()
+
 }
