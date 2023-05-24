@@ -3,7 +3,15 @@ package model
 import (
 	"NeetFlix/database"
 	"NeetFlix/entity"
+	"strconv"
+	"strings"
 )
+
+// ██ ███    ██ ███████ ███████ ██████  ████████
+// ██ ████   ██ ██      ██      ██   ██    ██
+// ██ ██ ██  ██ ███████ █████   ██████     ██
+// ██ ██  ██ ██      ██ ██      ██   ██    ██
+// ██ ██   ████ ███████ ███████ ██   ██    ██
 
 // ✅ Insert Data To Database
 func InsertMovie(movie entity.Movie) {
@@ -21,10 +29,17 @@ func InsertMovie(movie entity.Movie) {
 	}
 }
 
+// ██    ██ ██ ███████ ██     ██
+// ██    ██ ██ ██      ██     ██
+// ██    ██ ██ █████   ██  █  ██
+//  ██  ██  ██ ██      ██ ███ ██
+//   ████   ██ ███████  ███ ███
+
 // ✅ Raw Data All Movie
 func ViewAllMovie() []entity.Movie {
 	temp := database.DBMovie.Next
 	movies := []entity.Movie{}
+
 	for temp != nil {
 		movies = append(movies, temp.Data)
 		temp = temp.Next
@@ -32,36 +47,89 @@ func ViewAllMovie() []entity.Movie {
 	return movies
 }
 
-func UpdateMovie(movie entity.Movie) {
-	temp := &database.DBMovie
-	for temp.Next != nil {
-		if temp.Next.Data.Id == movie.Id {
-			if movie.Title != "-" {
-				temp.Next.Data.Title = movie.Title
-			}
-			if movie.Release != 0 {
-				temp.Next.Data.Release = movie.Release
-			}
-			if len(movie.Genre) != 0 {
-				temp.Next.Data.Genre = movie.Genre
-			}
-			if len(movie.Category) != 0 {
-				temp.Next.Data.Category = movie.Category
-			}
-			if movie.Studio != "-" {
-				temp.Next.Data.Studio = movie.Studio
-			}
-			if movie.Rating != 0 {
-				temp.Next.Data.Rating = movie.Rating
-			}
-			if movie.Agerate != "-" {
-				temp.Next.Data.Agerate = movie.Agerate
-			}
-			break
+// ✅ Check Data
+func CheckData(params int) bool {
+	temp := database.DBMovie.Next
+	if temp == nil {
+		return false
+	}
+
+	for temp != nil {
+		if temp.Data.Id == params {
+			return true
 		}
 		temp = temp.Next
 	}
+	return false
 }
+
+// ✅ Raw Data View By
+func ViewBy(params string) []entity.Movie {
+	temp := database.DBMovie.Next
+	movies := []entity.Movie{}
+	if temp == nil {
+		return movies
+	}
+
+	x, _ := strconv.Atoi(params)
+
+	for temp != nil {
+		if temp.Data.Id == x || strings.Contains(strings.ToLower(temp.Data.Title), strings.ToLower(params)) || strings.Contains(strings.Join(temp.Data.Genre, ","), params) || strings.Contains(strings.Join(temp.Data.Category, ","), params) {
+			movies = append(movies, temp.Data)
+		}
+		temp = temp.Next
+	}
+	return movies
+}
+
+// ✅ Raw Data View By
+// func ViewBy(params string) entity.Movie {
+// 	temp := database.DBMovie.Next
+// 	if temp == nil {
+// 		return entity.Movie{}
+// 	}
+
+// 	x, _ := strconv.Atoi(params)
+
+// 	for temp != nil {
+// 		if temp.Data.Id == x || strings.Contains(strings.Join(temp.Data.Genre, ","), params) || strings.Contains(strings.ToLower(temp.Data.Title), strings.ToLower(params)) {
+// 			return temp.Data
+// 		}
+// 		temp = temp.Next
+// 	}
+// 	return entity.Movie{}
+// }
+
+// func UpdateMovie(Id int) {
+// 	temp := &database.DBMovie
+// 	for temp.Next != nil {
+// 		if temp.Next.Data.Id == Id {
+// 			if temp.Data.Title != "-" {
+// 				temp.Next.Data.Title = temp.Data.Title
+// 			}
+// 			if temp.Data.Release != 0 {
+// 				temp.Next.Data.Release = temp.Data.Release
+// 			}
+// 			if len(temp.Data.Genre) != 0 {
+// 				temp.Next.Data.Genre = temp.Data.Genre
+// 			}
+// 			if len(temp.Data.Category) != 0 {
+// 				temp.Next.Data.Category = temp.Data.Category
+// 			}
+// 			if temp.Data.Studio != "-" {
+// 				temp.Next.Data.Studio = temp.Data.Studio
+// 			}
+// 			if temp.Data.Rating != 0 {
+// 				temp.Next.Data.Rating = temp.Data.Rating
+// 			}
+// 			if temp.Data.Agerate != "-" {
+// 				temp.Next.Data.Agerate = temp.Data.Agerate
+// 			}
+// 			break
+// 		}
+// 		temp = temp.Next
+// 	}
+// }
 
 // ✅ Delete Data
 func DeleteData(params int) {
