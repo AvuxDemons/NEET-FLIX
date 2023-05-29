@@ -3,6 +3,7 @@ package model
 import (
 	"NeetFlix/database"
 	"NeetFlix/entity"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -64,7 +65,7 @@ func CheckData(params int) bool {
 }
 
 // ✅ Raw Data View By
-func ViewBy(params string) []entity.Movie {
+func ViewMovieBy(params string) []entity.Movie {
 	temp := database.DBMovie.Next
 	movies := []entity.Movie{}
 	if temp == nil {
@@ -83,7 +84,7 @@ func ViewBy(params string) []entity.Movie {
 }
 
 // ✅ Raw Data View By
-// func ViewBy(params string) entity.Movie {
+// func ViewMovieBy(params string) entity.Movie {
 // 	temp := database.DBMovie.Next
 // 	if temp == nil {
 // 		return entity.Movie{}
@@ -132,12 +133,12 @@ func ViewBy(params string) []entity.Movie {
 // }
 
 // ✅ Delete Data
-func DeleteData(params int) {
+func DeleteMovie(params int) {
 	temp := &database.DBMovie
-	if temp == nil || temp.Next == nil {
-		// Data Kosong
-		return
-	}
+	// if temp == nil || temp.Next == nil {
+	// 	fmt.Println("DATA MOVIE KOSONG")
+	// 	return
+	// }
 
 	prev := temp
 	current := temp.Next
@@ -145,9 +146,11 @@ func DeleteData(params int) {
 	for current != nil {
 		if current.Data.Id == params {
 			prev.Next = current.Next
+			fmt.Println("MOVIE BERHASIL DIHAPUS")
 			return
 		}
 		prev = current
 		current = current.Next
 	}
+	fmt.Println("MOVIE TIDAK DITEMUKAN")
 }

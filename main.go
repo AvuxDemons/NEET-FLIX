@@ -1,9 +1,9 @@
 package main
 
-import (
-	"NeetFlix/view"
-)
+import "NeetFlix/view"
 
 func main() {
-	view.ChooseMenu(1)
+
+	// WELKAM TO MOBEL LEGEN BENG BENG
+	view.MainMenu()
 }

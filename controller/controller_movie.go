@@ -4,18 +4,30 @@ import (
 	"NeetFlix/database"
 	"NeetFlix/entity"
 	"NeetFlix/model"
+	"fmt"
 )
 
-// func ValidateMovie(params int) bool {
-// 	temp := &database.DBMovie
-// 	for temp != nil {
-// 		if temp.Data.Id == params {
-// 			return true
-// 		}
-// 		temp = temp.Next
-// 	}
-// 	return false
-// }
+func IsMovieEmpty() bool {
+	temp := &database.DBMovie
+	if temp.Next == nil {
+		fmt.Println("========================================")
+		fmt.Println("| DATA KOSONG")
+		return true
+	}
+	return false
+}
+
+func ValidateMovie(params int) bool {
+	temp := &database.DBMovie
+
+	for temp != nil {
+		if temp.Data.Id == params {
+			return true
+		}
+		temp = temp.Next
+	}
+	return false
+}
 
 // ██ ███    ██ ███████ ███████ ██████  ████████
 // ██ ████   ██ ██      ██      ██   ██    ██
@@ -75,7 +87,7 @@ func UpdateMovie(Id int, Title string, Release int, Category []string, Studio st
 	}
 }
 
-// func ViewBy(params string) entity.Movie {
+// func ViewMovieBy(params string) entity.Movie {
 // 	temp := &database.DBMovie
 // 	if temp == nil {
 // 		return entity.Movie{}

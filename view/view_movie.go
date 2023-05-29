@@ -7,30 +7,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"os/exec"
-	"runtime"
 	"strconv"
 	"strings"
 )
-
-// ✅ Fungsi Clear Terminal
-func clearScreen() {
-	if runtime.GOOS == "windows" {
-		cmd := exec.Command("cmd", "/c", "cls")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	} else {
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
-}
-
-// ✅ Fungsi Delete 1 Baris
-func reInput() {
-	fmt.Print("\033[F")
-	fmt.Print("\033[K")
-}
 
 // ✅ Fungsi Input Data Movie
 func InsertMovie() {
@@ -367,7 +346,7 @@ func UpdateMovie() {
 
 }
 
-func ViewByMenu() {
+func MenuViewMovieBy() {
 	fmt.Println("| PILIH BERDASARKAN")
 	fmt.Println("| 1. ID ")
 	fmt.Println("| 2. Judul ")
@@ -378,10 +357,10 @@ func ViewByMenu() {
 	fmt.Println("========================================")
 	fmt.Print("| PILIH : ")
 	fmt.Scan(&x)
-	ViewBy(x)
+	ViewMovieBy(x)
 }
 
-func ViewBy(selector int) {
+func ViewMovieBy(selector int) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	switch selector {
@@ -413,7 +392,7 @@ func ViewBy(selector int) {
 }
 
 func PrintMovie(params string) {
-	data := model.ViewBy(params)
+	data := model.ViewMovieBy(params)
 	for _, temp := range data {
 		fmt.Println("| ID \t\t:", temp.Id)
 		fmt.Println("| Title\t\t:", temp.Title)
@@ -435,47 +414,17 @@ func PrintAllMovie() {
 		fmt.Println("| Title 		:", temp.Title)
 		fmt.Println("| Release 		:", temp.Release)
 		fmt.Println("| Categoty 	:", temp.Category)
-		fmt.Println("| Studio\t\t:", temp.Studio)
+		fmt.Println("| Studio       :", temp.Studio)
 		fmt.Println("| Genre 		:", temp.Genre)
 		fmt.Println("| Age Rate 	:", temp.Agerate)
-		fmt.Println("| Rating\t\t:", temp.Rating)
-		if x != length {
+		fmt.Println("| Rating       :", temp.Rating)
+		if x+1 != length {
 			fmt.Println("-----------------------")
 		}
 	}
 }
 
-func MainMenu() {
-	var input int
-	for input != 3 {
-
-		fmt.Println("========================================")
-		fmt.Println("|  _  _ ___ ___ _____ ___ _    _____  __")
-		fmt.Println("| | \\| | __| __|_   _| __| |  |_ _\\ \\/ /")
-		fmt.Println("| | .` | _|| _|  | | | _|| |__ | | >  < ")
-		fmt.Println("| |_|\\_|___|___| |_| |_| |____|___/_/\\_\\")
-		fmt.Println("|")
-		fmt.Println("========================================")
-		fmt.Println("| 1. Manage User  ")
-		fmt.Println("| 2. Manage Movie  ")
-		fmt.Println("| 3. Exit  ")
-		fmt.Println("========================================")
-		fmt.Print("| Input : ")
-		fmt.Scan(&input)
-		fmt.Println("========================================")
-
-		if input < 3 && input > 0 {
-			clearScreen()
-			ChooseMenu(input)
-		} else if input != 3 {
-			fmt.Println("|  INVALID INPUT! ")
-		} else {
-			fmt.Println("|  Exiting Program ")
-		}
-	}
-}
-
-func ChooseMenu(selector int) {
+func MenuMovie() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var input int
@@ -514,26 +463,33 @@ func ChooseMenu(selector int) {
 				}
 			}
 		case 2:
-			fmt.Println("========================================")
-			fmt.Println("|  Masukkan MovieID yang ingin dihapus ")
-			fmt.Println("========================================")
-
-			model.DeleteData(1)
+			var del int
+			if !controller.IsUserEmpty() {
+				fmt.Println("========================================")
+				fmt.Println("|  Masukkan MovieID yang ingin dihapus ")
+				fmt.Print("| Pilih ID : ")
+				fmt.Scan(&del)
+				fmt.Println("========================================")
+				model.DeleteMovie(del)
+			}
 		case 3:
-			fmt.Println("========================================")
-			fmt.Println("|  Masukkan Movie yang ingin diupdate ")
-			fmt.Println("========================================")
-
-			UpdateMovie()
+			if !controller.IsMovieEmpty() {
+				fmt.Println("========================================")
+				fmt.Println("|  Masukkan Movie yang ingin diupdate ")
+				fmt.Println("========================================")
+				UpdateMovie()
+			}
 		case 4:
-			PrintAllMovie()
+			if !controller.IsMovieEmpty() {
+				PrintAllMovie()
+			}
 		case 5:
-			ViewByMenu()
+			if !controller.IsMovieEmpty() {
+				MenuViewMovieBy()
+			}
 		}
-
 		if input > exitcase {
 			fmt.Println(" INVALID INPUT!")
 		}
 	}
-
 }
